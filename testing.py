@@ -11,3 +11,6 @@ dfa=auto.DFA({'q0','q1','q2','q3'}#states
 if dfa.checkstring('b'):
     print('Accepted')
 else: print('Rejected')
+if dfa.NullCheck():
+    print('Null')
+else: print('Not Null')
