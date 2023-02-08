@@ -14,3 +14,7 @@ class DFA:
 
     def add_alphabet(self, alpha):
         self.alphabets.append(alpha)
+
+    def add_start_state(self, start_state):
+        self.start_state = start_state
+
