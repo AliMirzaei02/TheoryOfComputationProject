@@ -22,7 +22,7 @@ class DFA:
         self.accept_states.append(accept_state)
 
     def add_transition(self, state, alpha, dest):
-        self.transitions[(state, alpha)] = dest
+        self.transitions[state][alpha] = dest
 
     def printDFA(self):
         print("states are:        ", self.states)
@@ -43,10 +43,23 @@ class DFA:
             return False
 
     def isEmpty(self):
-        if self.accept_states == []:
-            return True
-        else:
-            return False
+        Reachables = []
+        queue = []
+        Reachables.append(self.start_state)
+        queue.append(self.start_state)
+        isempty = True
+
+        while queue:
+            state = queue.pop(0)
+
+            for next_state in self.transitions[state].values():
+                if next_state not in Reachables:
+                    if next_state in self.accept_states:
+                        isempty = False
+                    Reachables.append(next_state)
+                    queue.append(next_state)
+
+        return isempty
 
     def isInfinite(self):
         for test_string in range(len(self.states), len(self.states)*2):
