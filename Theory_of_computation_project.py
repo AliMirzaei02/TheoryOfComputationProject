@@ -11,3 +11,6 @@ class DFA:
     
     def add_state(self, state):
         self.states.append(state)
+
+    def add_alphabet(self, alpha):
+        self.alphabets.append(alpha)
