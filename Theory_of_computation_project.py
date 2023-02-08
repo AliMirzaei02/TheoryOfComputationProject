@@ -18,3 +18,5 @@ class DFA:
     def add_start_state(self, start_state):
         self.start_state = start_state
 
+    def add_accept_state(self, accept_state):
+        self.accept_states.append(accept_state)
