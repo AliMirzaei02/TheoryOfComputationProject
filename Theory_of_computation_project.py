@@ -38,13 +38,21 @@ class DFA:
         for char in string:
             self.current_state = self.transitions[(self.current_state, char)]
         if (self.current_state in self.accept_states):
-            print("Accepted")
+            print("Accepted!")
         else:
-            print("Rejected")
+            print("Rejected.")
+
+    def isEmpty(self):
+        if self.accept_states == []:
+            print("DFA is empty.")
+        else:
+            print("DFA isn't empty.")
 
 
 
 
+
+#   A DFA that accept strings '*aa'
 dfa = DFA()
 
 dfa.add_state('0')
@@ -68,3 +76,5 @@ dfa.add_transition('2', 'b', '0')
 dfa.printDFA()
 
 dfa.isAccept('aaaabaa')
+
+dfa.isEmpty()
