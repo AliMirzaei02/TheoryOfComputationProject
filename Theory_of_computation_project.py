@@ -31,6 +31,16 @@ class DFA:
         print("accept_states are: ", self.accept_states)
         print("transitions are:   ", self.transitions)
 
+    def isAccept(self, string):
+
+        self.current_state = self.start_state
+
+        for char in string:
+            self.current_state = self.transitions[(self.current_state, char)]
+        if (self.current_state in self.accept_states):
+            print("Accepted")
+        else:
+            print("Rejected")
 
 
 
