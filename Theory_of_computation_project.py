@@ -30,3 +30,31 @@ class DFA:
         print("start_state is:    ", self.start_state)
         print("accept_states are: ", self.accept_states)
         print("transitions are:   ", self.transitions)
+
+
+
+
+
+dfa = DFA()
+
+dfa.add_state('0')
+dfa.add_state('1')
+dfa.add_state('2')
+
+dfa.add_alphabet('a')
+dfa.add_alphabet('b')
+
+dfa.add_start_state('0')
+
+dfa.add_accept_state('2')
+
+dfa.add_transition('0', 'a', '1')
+dfa.add_transition('0', 'b', '0')
+dfa.add_transition('1', 'a', '2')
+dfa.add_transition('1', 'b', '0')
+dfa.add_transition('2', 'a', '2')
+dfa.add_transition('2', 'b', '0')
+
+dfa.printDFA()
+
+dfa.isAccept('aaaabaa')
