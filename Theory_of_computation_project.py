@@ -8,3 +8,6 @@ class DFA:
         self.start_state = ""
         self.accept_states = []
         self.transitions = {}
+    
+    def add_state(self, state):
+        self.states.append(state)
