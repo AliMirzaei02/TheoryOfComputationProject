@@ -20,3 +20,6 @@ class DFA:
 
     def add_accept_state(self, accept_state):
         self.accept_states.append(accept_state)
+
+    def add_transition(self, state, alpha, dest):
+        self.transitions[(state, alpha)] = dest
