@@ -38,16 +38,19 @@ class DFA:
         for char in string:
             self.current_state = self.transitions[(self.current_state, char)]
         if (self.current_state in self.accept_states):
-            print("Accepted!")
+            return True
         else:
-            print("Rejected.")
+            return False
 
     def isEmpty(self):
         if self.accept_states == []:
-            print("DFA is empty.")
+            return True
         else:
-            print("DFA isn't empty.")
+            return False
 
+    def isInfinite(self):
+        for test_string in range(len(self.states), len(self.states)*2):
+            pass
 
 
 
