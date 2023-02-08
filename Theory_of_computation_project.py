@@ -23,3 +23,10 @@ class DFA:
 
     def add_transition(self, state, alpha, dest):
         self.transitions[(state, alpha)] = dest
+
+    def printDFA(self):
+        print("states are:        ", self.states)
+        print("alphabets are:     ", self.alphabets)
+        print("start_state is:    ", self.start_state)
+        print("accept_states are: ", self.accept_states)
+        print("transitions are:   ", self.transitions)
