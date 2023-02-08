@@ -22,7 +22,12 @@ class DFA:
         self.accept_states.append(accept_state)
 
     def add_transition(self, state, alpha, dest):
-        self.transitions[state][alpha] = dest
+        if state in self.transitions:
+            self.transitions[state][alpha] = dest
+        else:
+            self.destination = {}
+            self.destination[alpha] = dest
+            self.transitions[state] = self.destination
 
     def printDFA(self):
         print("states are:        ", self.states)
