@@ -31,11 +31,13 @@ class DFA:
             self.transitions[state] = self.destination
 
     def printDFA(self):
+        print("\n**************************************")
         print("states are:        ", self.states)
         print("alphabets are:     ", self.alphabets)
         print("initial_state is:  ", self.initial_state)
         print("accept_states are: ", self.accept_states)
         print("transitions are:   ", self.transitions)
+        print("**************************************\n")
 
     def isAccept(self, test_string:str):
             state = self.initial_state
@@ -150,33 +152,25 @@ class DFA:
         return dfas
 
     def isSubset(self, new_dfa):
-        intersect = self.Intersection(new_dfa)
-        #self.printDFA()
-        #intersect.printDFA()
+        intersect = self.Intersection(new_dfa).MinimizeDFA()
         selfgraph = nx.DiGraph([(start_state, end_state) for start_state, transition in self.transitions.items() for end_state in transition.values()])
         new_Graph = nx.DiGraph([(start_state, end_state) for start_state, transition in intersect.transitions.items() for end_state in transition.values()])
-        if nx.is_isomorphic(selfgraph, new_Graph):
-            return True
-        else:
-            return False
+        if nx.is_isomorphic(selfgraph, new_Graph): return True
+        else: return False
+
 
 
 
 
 #   A DFA that accept strings '*aa'
 dfa1 = DFA()
-
 dfa1.add_state('0')
 dfa1.add_state('1')
 dfa1.add_state('2')
-
 dfa1.add_alphabet('a')
 dfa1.add_alphabet('b')
-
 dfa1.add_initial_state('0')
-
 dfa1.add_accept_state('2')
-
 dfa1.add_transition('0', 'a', '1')
 dfa1.add_transition('0', 'b', '0')
 dfa1.add_transition('1', 'a', '2')
@@ -209,23 +203,26 @@ dfa2 = DFA({'0', '1', '2'}               #states
             , '1': {'a': '1', 'b': '1'}  #transitions
             , '2': {'a': '2', 'b': '2'}})#transitions
 
-#dfa2.printDFA()
+dfa2.printDFA()
 
-#print(dfa2.isAccept('b'))
+print(dfa2.isAccept('b'))
 
-#print(dfa2.isNull())
+print(dfa2.isNull())
 
-#print(dfa2.isInfinite())
+print(dfa2.isInfinite())
 
-#print(dfa2.maxstringlength())
+print(dfa2.maxstringlength())
 
-#print(dfa2.minstringlength())
+print(dfa2.minstringlength())
 
-#dfa2.Complement().printDFA()
+dfa2.Complement().printDFA()
+
+dfa1.Intersection(dfa2).printDFA()
+print(dfa1.Intersection(dfa2).isAccept('baa'))
 
 
 #   A DFA that accept strings 'bb*'
-dfa3 = DFA({'0', '1', '2', '3'}               #states
+dfa3 = DFA({'0', '1', '2', '3'}          #states
             , {'a','b'}                  #alphabet
             , '0'                        #initial state
             , {'1'}                      #accept_states
@@ -236,5 +233,3 @@ dfa3 = DFA({'0', '1', '2', '3'}               #states
 
 print(dfa3.isSubset(dfa2))
 
-#dfa1.Intersection(dfa2).printDFA()
-#print(dfa1.Intersection(dfa2).isAccept('baa'))
