@@ -150,6 +150,13 @@ class DFA:
 
         def Intersection(self,other):
             pass
+        
+        def isSubset(self, new_dfa):
+            intersect = self.Intersection(new_dfa)
+            selfgraph = self.toGraph()
+            new_Graph = intersect.toGraph()
+            if nx.is_isomorphic(selfgraph, new_Graph): return True
+            else: return False
 
 
 
