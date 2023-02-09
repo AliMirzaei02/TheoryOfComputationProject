@@ -47,4 +47,16 @@ class auto:
             except:
                 return False 
             
+        def maxstringlength(self):
+            if self.NullCheck(): return 0
+            if not self.FiniteCheck(): return "the language is not finite."
+            else:
+                graph=netx.DiGraph([(start_state, end_state)
+                for start_state, transition in self.transitions.items()
+                for end_state in transition.values()])
+                states=netx.descendants(graph, self.initial)
+                Reachable2Accept=self.Accept.union(*(netx.ancestors(graph,state)for state in self.Accept))
+                commonstates=states.intersection(Reachable2Accept)
+                sub=graph.subgraph(commonstates)
+                return netx.dag_longest_path_length(sub) 
         
