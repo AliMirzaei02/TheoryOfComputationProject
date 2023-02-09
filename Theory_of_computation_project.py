@@ -121,19 +121,24 @@ class DFA:
         newDFA = DFA(self.states, self.alphabets, self.initial_state, NewAccept, self.transitions)
         return newDFA
         
-    def NewDFA(dfa1,dfa2):
-        if dfa1.alphabets != dfa2.alphabets: raise Exception('Input symbols DO NOT match!')
-        newinitial=dfa1.initial_state+'_'+dfa2.initial_state
-        usefulstates={newinitial}
-        visited=[newinitial]
-        while len(visited)>0:
-            state=visited.pop(0)
-            for symbol in dfa1.alphabets:
-                nextdfastate=dfa1.transitions[state.split('_')[0]][symbol]+'_'+dfa2.transitions[state.split('_')[1]][symbol]
-                usefulstates.add(nextdfastate)
-                visited.append(nextdfastate)
-                    
-        return usefulstates,newinitial
+    def NewDFA(self,dfa1,dfa2):
+            seen=[]
+            if dfa1.alphabets != dfa2.alphabets: raise Exception('input symbols do not match!')
+            newinitial=dfa1.initial_state+'_'+dfa2.initial_state
+            usefulstates={newinitial}
+            visited=[newinitial]
+            newtransitions={}
+            while len(visited)>0:
+                state=visited.pop(0)
+                for symbol in dfa1.alphabets:
+                    nextdfastate=dfa1.transitions[state.split('_')[0]][symbol]+'_'+dfa2.transitions[state.split('_')[1]][symbol]
+                    newtransitions[state]=newtransitions.get(state,{})
+                    newtransitions[state][symbol]=nextdfastate
+                    if nextdfastate not in seen:
+                        visited.append(nextdfastate)
+                    usefulstates.add(nextdfastate)
+                seen.append(state)
+            return usefulstates,newinitial,newtransitions
                 
         
     def Union(self,other):
@@ -232,7 +237,7 @@ dfa1.Complement().printDFA()
 #print(dfa3.isSubset(dfa2))'''
 
 
-dfa=DFA.DFA({'q0','q1','q2','q3'}#states
+dfa=DFA({'q0','q1','q2','q3'}#states
             ,{'a','b'}#alphabet
             ,'q0'#initial state
             ,{'q0':{'a':'q1','b':'q2'}#transitions
@@ -248,7 +253,7 @@ if dfa.isNull():
 else: print('Not Null')
 
 
-dfa1=DFA.DFA({'q0','q1'},
+dfa1=DFA({'q0','q1'},
              {'a','b'},
              'q0',
              {'q0':{'a':'q1','b':'q0'},
@@ -256,7 +261,7 @@ dfa1=DFA.DFA({'q0','q1'},
              {'q1'}
              )
 
-dfa2=DFA.DFA({'p0','p1','p2'},
+dfa2=DFA({'p0','p1','p2'},
              {'a','b'},
              'p0',
              {'p0':{'a':'p2','b':'p1'},
