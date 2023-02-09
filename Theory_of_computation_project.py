@@ -98,7 +98,7 @@ class DFA:
             Reachable2Accept=self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
             commonstates=states.intersection(Reachable2Accept)
             sub=graph.subgraph(commonstates)
-            return int(nx.dag_longest_path_length(sub) + 1)
+            return nx.dag_longest_path_length(sub) + 1
             
     def minstringlength(self):
         queue = deque([self.initial_state])
@@ -143,27 +143,7 @@ class DFA:
         pass
         
     def Intersection(self,new_dfa):
-
-        new_states = set()
-        new_initial_state = str()
-        new_accept_states = set()
-        new_transitions = dict()
-        for fstate in self.states:
-            for sstate in new_dfa.states:
-                newstate = fstate + sstate
-                new_states.add(newstate)
-                if fstate in self.accept_states and sstate in new_dfa.accept_states:
-                    new_accept_states.add(fstate+sstate)
-                if fstate == self.initial_state and sstate == new_dfa.initial_state:
-                    new_initial_state = fstate+sstate
-                dest = {}
-                for alpha in self.alphabets:
-                    fgoesto = self.transitions.get(fstate).get(alpha)
-                    sgoesto = new_dfa.transitions.get(sstate).get(alpha)
-                    dest.update({alpha:fgoesto+sgoesto})
-                new_transitions.update({fstate+sstate:dest})
-        dfas = DFA(new_states, self.alphabets, new_initial_state, new_accept_states, new_transitions)
-        return dfas
+        pass
 
     def isSubset(self, new_dfa):
         intersect = self.Intersection(new_dfa)
