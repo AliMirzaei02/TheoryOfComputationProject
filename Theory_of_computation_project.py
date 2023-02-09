@@ -30,6 +30,9 @@ class DFA:
             self.destination[alpha] = dest
             self.transitions[state] = self.destination
 
+    def toGraph(self):
+        return nx.DiGraph([(start_state, dest_state) for start_state, transition in self.transitions.items() for dest_state in transition.values()])
+
     def printDFA(self):
         print("\n**************************************")
         print("states are:        ", self.states)
@@ -60,9 +63,7 @@ class DFA:
             
     def isInfinite(self):
         if self.isNull(): return False
-        graph = nx.DiGraph([(start_state, end_state)
-        for start_state, transition in self.transitions.items()
-        for end_state in transition.values()])
+        graph = self.toGraph()
         states = nx.descendants(graph, self.initial_state)
         Reachable2Accept = self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
         commonstates = states.intersection(Reachable2Accept)
@@ -77,9 +78,7 @@ class DFA:
         if self.isNull(): return 0
         elif self.isInfinite(): return "The language is infinite."
         else:
-            graph = nx.DiGraph([(start_state, end_state)
-            for start_state, transition in self.transitions.items()
-            for end_state in transition.values()])
+            graph = self.toGraph()
             states=nx.descendants(graph, self.initial_state)
             Reachable2Accept=self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
             commonstates=states.intersection(Reachable2Accept)
@@ -152,9 +151,9 @@ class DFA:
         return dfas
 
     def isSubset(self, new_dfa):
-        intersect = self.Intersection(new_dfa).MinimizeDFA()
-        selfgraph = nx.DiGraph([(start_state, end_state) for start_state, transition in self.transitions.items() for end_state in transition.values()])
-        new_Graph = nx.DiGraph([(start_state, end_state) for start_state, transition in intersect.transitions.items() for end_state in transition.values()])
+        intersect = self.Intersection(new_dfa)
+        selfgraph = self.toGraph()
+        new_Graph = intersect.toGraph()
         if nx.is_isomorphic(selfgraph, new_Graph): return True
         else: return False
 
