@@ -1,3 +1,5 @@
+import networkx as netx
+
 class auto:
     class DFA():
         def __init__(self, states:set, alphabet:set, initial:str, transition:dict, Accept:set):
@@ -29,5 +31,15 @@ class auto:
                         states.append(next_state)
             return True
             
+        def FiniteCheck(self):
+            if self.NullCheck(): return True
+            graph=netx.DiGraph([(start_state, end_state)
+            for start_state, transition in self.transitions.items()
+            for end_state in transition.values()])
+            states=netx.descendants(graph, self.initial)
+            Reachable2Accept=self.Accept.union(*(netx.ancestors(graph,state)for state in self.Accept))
+            commonstates=states.intersection(Reachable2Accept)
+            sub=graph.subgraph(commonstates)
+            # from here
             
         
