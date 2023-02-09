@@ -77,3 +77,10 @@ class auto:
                         distances[next_state] = distances[state] + 1
                         queue.append(next_state)
             return 0
+        def complement(self):
+            NewAccept=set()
+            for state in self.states:
+                if state not in self.Accept: NewAccept.add(state)
+            NewDFA=auto.DFA(self.states,self.alphabet,self.initial,self.transition, NewAccept)
+            return NewDFA
+        
