@@ -75,7 +75,7 @@ class DFA:
         if self.isNull(): return 0
         elif self.isInfinite(): return "The language is infinite."
         else:
-            graph=nx.DiGraph([(start_state, end_state)
+            graph = nx.DiGraph([(start_state, end_state)
             for start_state, transition in self.transitions.items()
             for end_state in transition.values()])
             states=nx.descendants(graph, self.initial_state)
@@ -126,8 +126,40 @@ class DFA:
     def Difference(self,other):
         pass
         
-    def Intersection(self,other):
-        pass
+    def Intersection(self,new_dfa):
+
+        new_states = set()
+        new_initial_state = str()
+        new_accept_states = set()
+        new_transitions = dict()
+        for fstate in self.states:
+            for sstate in new_dfa.states:
+                newstate = fstate + sstate
+                new_states.add(newstate)
+                if fstate in self.accept_states and sstate in new_dfa.accept_states:
+                    new_accept_states.add(fstate+sstate)
+                if fstate == self.initial_state and sstate == new_dfa.initial_state:
+                    new_initial_state = fstate+sstate
+                dest = {}
+                for alpha in self.alphabets:
+                    fgoesto = self.transitions.get(fstate).get(alpha)
+                    sgoesto = new_dfa.transitions.get(sstate).get(alpha)
+                    dest.update({alpha:fgoesto+sgoesto})
+                new_transitions.update({fstate+sstate:dest})
+        dfas = DFA(new_states, self.alphabets, new_initial_state, new_accept_states, new_transitions)
+        return dfas
+
+    def isSubset(self, new_dfa):
+        intersect = self.Intersection(new_dfa)
+        #self.printDFA()
+        #intersect.printDFA()
+        selfgraph = nx.DiGraph([(start_state, end_state) for start_state, transition in self.transitions.items() for end_state in transition.values()])
+        new_Graph = nx.DiGraph([(start_state, end_state) for start_state, transition in intersect.transitions.items() for end_state in transition.values()])
+        if nx.is_isomorphic(selfgraph, new_Graph):
+            return True
+        else:
+            return False
+
 
 
 
@@ -154,7 +186,7 @@ dfa1.add_transition('2', 'b', '0')
 
 dfa1.printDFA()
 
-print(dfa1.isAccept('aaaabaa'))
+print(dfa1.isAccept('aa'))
 
 print(dfa1.isNull())
 
@@ -177,16 +209,32 @@ dfa2 = DFA({'0', '1', '2'}               #states
             , '1': {'a': '1', 'b': '1'}  #transitions
             , '2': {'a': '2', 'b': '2'}})#transitions
 
-dfa2.printDFA()
+#dfa2.printDFA()
 
-print(dfa2.isAccept('bbaba'))
+#print(dfa2.isAccept('b'))
 
-print(dfa2.isNull())
+#print(dfa2.isNull())
 
-print(dfa2.isInfinite())
+#print(dfa2.isInfinite())
 
-print(dfa2.maxstringlength())
+#print(dfa2.maxstringlength())
 
-print(dfa2.minstringlength())
+#print(dfa2.minstringlength())
 
-dfa2.Complement().printDFA()
+#dfa2.Complement().printDFA()
+
+
+#   A DFA that accept strings 'bb*'
+dfa3 = DFA({'0', '1', '2', '3'}               #states
+            , {'a','b'}                  #alphabet
+            , '0'                        #initial state
+            , {'1'}                      #accept_states
+            ,{'0': {'a': '3', 'b': '1'}  #transitions
+            , '1': {'a': '3', 'b': '2'}  #transitions
+            , '2': {'a': '2', 'b': '2'}  #transitions
+            , '3': {'a': '3', 'b': '3'}})#transitions
+
+print(dfa3.isSubset(dfa2))
+
+#dfa1.Intersection(dfa2).printDFA()
+#print(dfa1.Intersection(dfa2).isAccept('baa'))
