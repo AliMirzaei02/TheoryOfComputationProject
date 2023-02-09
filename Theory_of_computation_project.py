@@ -88,11 +88,10 @@ class DFA:
                             if len(path) == word_length:
                                 count += 1
                 return count
-        else: print("Infinite length!")
    
     def maxstringlength(self):
         if self.isNull(): return 0
-        elif self.isInfinite(): return "The language is infinite."
+        elif self.isInfinite(): return "Infinite!"
         else:
             graph = self.toGraph()
             states=nx.descendants(graph, self.initial_state)
@@ -203,9 +202,9 @@ print(dfa1.isInfinite())
 
 print(dfa1.acceptStringLength())
 
-print(type(dfa1.maxstringlength()))
+print(dfa1.maxstringlength())
 
-print(type(dfa1.minstringlength()))
+print(dfa1.minstringlength())
 
 dfa1.Complement().printDFA()
 
