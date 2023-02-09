@@ -40,7 +40,6 @@ class DFA:
             state = self.initial_state
             for symbol in test_string:
                 state = self.transitions[state][symbol]
-                print(state)
             if state in self.accept_states: return True
             else: return False
         
