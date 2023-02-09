@@ -3,12 +3,12 @@ import networkx as nx
 from collections import defaultdict, deque
 
 class DFA:
-    def __init__(self):
-        self.states = set()
-        self.alphabets = set()
-        self.initial_state = str()
-        self.accept_states = set()
-        self.transitions = dict()
+    def __init__(self, states=set(), alphabets=set(), initial_state=str(), accept_states=set(), transitions=dict()):
+        self.states = states
+        self.alphabets = alphabets
+        self.initial_state = initial_state
+        self.accept_states = accept_states
+        self.transitions = transitions
     
     def add_state(self, state):
         self.states.add(state)
@@ -124,42 +124,62 @@ class DFA:
         return usefulstates,newinitial
                 
         
-    def Union(self,other)->self:
+    def Union(self,other):
         pass
         
-    def Difference(self,other)->self:
+    def Difference(self,other):
         pass
         
-    def Intersection(self,other)->self:
+    def Intersection(self,other):
         pass
 
 
 
 #   A DFA that accept strings '*aa'
-dfa = DFA()
+dfa1 = DFA()
 
-dfa.add_state('0')
-dfa.add_state('1')
-dfa.add_state('2')
+dfa1.add_state('0')
+dfa1.add_state('1')
+dfa1.add_state('2')
 
-dfa.add_alphabet('a')
-dfa.add_alphabet('b')
+dfa1.add_alphabet('a')
+dfa1.add_alphabet('b')
 
-dfa.add_initial_state('0')
+dfa1.add_initial_state('0')
 
-dfa.add_accept_state('2')
+dfa1.add_accept_state('2')
 
-dfa.add_transition('0', 'a', '1')
-dfa.add_transition('0', 'b', '0')
-dfa.add_transition('1', 'a', '2')
-dfa.add_transition('1', 'b', '0')
-dfa.add_transition('2', 'a', '2')
-dfa.add_transition('2', 'b', '0')
+dfa1.add_transition('0', 'a', '1')
+dfa1.add_transition('0', 'b', '0')
+dfa1.add_transition('1', 'a', '2')
+dfa1.add_transition('1', 'b', '0')
+dfa1.add_transition('2', 'a', '2')
+dfa1.add_transition('2', 'b', '0')
 
-dfa.printDFA()
+dfa1.printDFA()
 
-print(dfa.isAccept('aaaabaa'))
+print(dfa1.isAccept('aaaabaa'))
 
-print(dfa.isNull())
+print(dfa1.isNull())
 
-print(dfa.isFinite())
+print(dfa1.isFinite())
+
+
+
+#   A DFA that accept strings '*bb*'
+dfa2 = DFA({'0','1','2','3'}         #states
+            ,{'a','b'}               #alphabet
+            ,'0'                     #initial state
+            ,{'2'}                   #accept_states
+            ,{'0':{'a':'3','b':'1'}  #transitions
+            , '1':{'a':'3','b':'2'}  #transitions
+            , '2':{'a':'2','b':'2'}  #transitions
+            , '3':{'a':'3','b':'3'}})#transitions
+
+dfa2.printDFA()
+
+print(dfa2.isAccept('bbaaaabaa'))
+
+print(dfa2.isNull())
+
+print(dfa2.isFinite())
