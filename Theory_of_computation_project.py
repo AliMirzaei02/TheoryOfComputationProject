@@ -3,28 +3,15 @@ import networkx as nx
 from collections import defaultdict, deque
 
 class DFA:
+    def __init__(self, states=set(), alphabets=set(), initial_state=str(), accept_states=set(), transitions=dict()):
+        self.states = states
+        self.alphabets = alphabets
+        self.initial_state = initial_state
+        self.accept_states = accept_states
+        self.transitions = transitions
     
-    
-    class DFA():
-        def __init__(self, states:set, alphabets:set, initial_state:str, transitions:dict, accept_states:set):
-            self.states = states
-            self.alphabets =alphabets
-            self.initial_state = initial_state
-            self.transitions = transitions
-            self.accept_states = accept_states
-            print('constructed a new DFA.')
-    
-    
-    
-        '''def __init__(self):
-            self.states = set()
-            self.alphabets = set()
-            self.initial_state = str()
-            self.accept_states = set()
-            self.transitions = dict()
-        ''''''
-        def add_state(self, state):
-            self.states.add(state)
+    def add_state(self, state):
+        self.states.add(state)
 
         def add_alphabet(self, alpha):
             self.alphabets.add(alpha)
@@ -35,20 +22,25 @@ class DFA:
         def add_accept_state(self, accept_state):
             self.accept_states.add(accept_state)
 
-        def add_transition(self, state, alpha, dest):
-            if state in self.transitions:
-                self.transitions[state][alpha] = dest
-            else:
-                self.destination = {}
-                self.destination[alpha] = dest
-                self.transitions[state] = self.destination
-        '''
-        def printDFA(self):
-            print("states are:        ", self.states)
-            print("alphabets are:     ", self.alphabets)
-            print("initial_state is:  ", self.initial_state)
-            print("accept_states are: ", self.accept_states)
-            print("transitions are:   ", self.transitions)
+    def add_transition(self, state, alpha, dest):
+        if state in self.transitions:
+            self.transitions[state][alpha] = dest
+        else:
+            self.destination = {}
+            self.destination[alpha] = dest
+            self.transitions[state] = self.destination
+
+    def toGraph(self):
+        return nx.DiGraph([(start_state, dest_state) for start_state, transition in self.transitions.items() for dest_state in transition.values()])
+
+    def printDFA(self):
+        print("\n**************************************")
+        print("states are:        ", self.states)
+        print("alphabets are:     ", self.alphabets)
+        print("initial_state is:  ", self.initial_state)
+        print("accept_states are: ", self.accept_states)
+        print("transitions are:   ", self.transitions)
+        print("**************************************\n")
 
         def isAccept(self, test_string:str):
                 state = self.initial_state
@@ -57,137 +49,207 @@ class DFA:
                 if state in self.accept_states: return True
                 else: return False
         
-        def isNull(self):
-            visited = [self.initial_state]
-            states = [self.initial_state]
-            while len(states)>0:
-                state = states[0]
-                del states[0]
-                for next_state in self.transitions[state].values():
-                    if next_state not in visited: 
-                        if next_state in self.accept_states: return False
-                        visited.append(next_state)
-                        states.append(next_state)
-            return True
+    def isNull(self):
+        visited = [self.initial_state]
+        states = deque([self.initial_state])
+        while len(states)>0:
+            state = states.popleft()
+            for next_state in self.transitions[state].values():
+                if next_state not in visited: 
+                    if next_state in self.accept_states: return False
+                    visited.append(next_state)
+                    states.append(next_state)
+        return True
             
-        def isFinite(self):
-            if self.isNull(): return True
-            graph = nx.DiGraph([(start_state, end_state)
-            for start_state, transition in self.transitions.items()
-            for end_state in transition.values()])
-            states = nx.descendants(graph, self.initial_state)
-            Reachable2Accept = self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
-            commonstates = states.intersection(Reachable2Accept)
-            sub = graph.subgraph(commonstates)
+    def isInfinite(self):
+        if self.isNull(): return False
+        graph = self.toGraph()
+        states = nx.descendants(graph, self.initial_state)
+        Reachable2Accept = self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
+        commonstates = states.intersection(Reachable2Accept)
+        sub = graph.subgraph(commonstates)
+        try:
+            longest = nx.dag_longest_path_length(sub)
+            return False
+        except:
+            return True 
 
-            try:
-                longest=nx.dag_longest_path_length(sub)
-                return True
-            except:
-                return False 
+    def acceptStringLength(self):
+        if not(self.isInfinite() or self.isNull()):
+            max_string_length = self.maxstringlength()
+            if max_string_length:
+                min_string_length = self.minstringlength()
+                dfa_graph = self.toGraph()
+                count = 0
+                for word_length in range(min_string_length, max_string_length + 1):
+                    for accept_state in self.accept_states:
+                        paths = nx.all_simple_paths(dfa_graph, self.initial_state, accept_state)
+                        for path in paths:
+                            if len(path) == word_length:
+                                count += 1
+                return count
+   
+    def maxstringlength(self):
+        if self.isNull(): return 0
+        elif self.isInfinite(): return "Infinite!"
+        else:
+            graph = self.toGraph()
+            states=nx.descendants(graph, self.initial_state)
+            Reachable2Accept=self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
+            commonstates=states.intersection(Reachable2Accept)
+            sub=graph.subgraph(commonstates)
+            return int(nx.dag_longest_path_length(sub) + 1)
+            
+    def minstringlength(self):
+        queue = deque([self.initial_state])
+        distances = defaultdict(lambda: None)
+        distances[self.initial_state] = 0
+        while queue:
+            state = queue.popleft()
+            if state in self.accept_states:
+                return distances[state]
+            for next_state in self.transitions[state].values():
+                if distances[next_state] is None:
+                    distances[next_state] = distances[state] + 1
+                    queue.append(next_state)
+        return 0
         
+    def Complement(self):
+        NewAccept=set()
+        for state in self.states:
+            if state not in self.accept_states: NewAccept.add(state)
+        newDFA = DFA(self.states, self.alphabets, self.initial_state, NewAccept, self.transitions)
+        return newDFA
         
-        def maxstringlength(self):
-                if self.isNull(): return 0
-                if not self.isFinite(): return "the language is not finite."
-                else:
-                    graph=nx.DiGraph([(start_state, end_state)
-                    for start_state, transition in self.transitions.items()
-                    for end_state in transition.values()])
-                    states=nx.descendants(graph, self.initial_state)
-                    Reachable2Accept=self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
-                    commonstates=states.intersection(Reachable2Accept)
-                    sub=graph.subgraph(commonstates)
-                    return nx.dag_longest_path_length(sub) 
-
-        def minstringlength(self):
-            queue = deque()
-            distances = defaultdict(lambda: None)
-            distances[self.initial_state] = 0
-            queue.append(self.initial_state)
-            while queue:
-                state = queue.popleft()            
-                if state in self.accept_states:
-                    return distances[state]
-                for next_state in self.transitions[state].values():
-                    if distances[next_state] is None:
-                        distances[next_state] = distances[state] + 1
-                        queue.append(next_state)
-            return 0
-
-        def Complement(self):
-            NewAccept=set()
-            for state in self.states:
-                if state not in self.accept_states: NewAccept.add(state)
-            NewDFA=DFA(self.states,self.alphabets,self.initial_state,self.transitions, NewAccept)
-            return NewDFA
-
-        def NewDFA(self,dfa1,dfa2):
-            seen=[]
-            if dfa1.alphabets != dfa2.alphabets: raise Exception('input symbols do not match!')
-            newinitial=dfa1.initial_state+'_'+dfa2.initial_state
-            usefulstates={newinitial}
-            visited=[newinitial]
-            newtransitions={}
-            while len(visited)>0:
-                state=visited.pop(0)
-                for symbol in dfa1.alphabets:
-                    nextdfastate=dfa1.transitions[state.split('_')[0]][symbol]+'_'+dfa2.transitions[state.split('_')[1]][symbol]
-                    newtransitions[state]=newtransitions.get(state,{})
-                    newtransitions[state][symbol]=nextdfastate
-                    if nextdfastate not in seen:
-                        visited.append(nextdfastate)
-                    usefulstates.add(nextdfastate)
-                seen.append(state)
-            return usefulstates,newinitial,newtransitions
-
-
-        def Union(self,other):
-            pass
-
-        def Difference(self,other):
-            pass
-
-        def Intersection(self,other):
-            pass
+    def NewDFA(dfa1,dfa2):
+        if dfa1.alphabets != dfa2.alphabets: raise Exception('Input symbols DO NOT match!')
+        newinitial=dfa1.initial_state+'_'+dfa2.initial_state
+        usefulstates={newinitial}
+        visited=[newinitial]
+        while len(visited)>0:
+            state=visited.pop(0)
+            for symbol in dfa1.alphabets:
+                nextdfastate=dfa1.transitions[state.split('_')[0]][symbol]+'_'+dfa2.transitions[state.split('_')[1]][symbol]
+                usefulstates.add(nextdfastate)
+                visited.append(nextdfastate)
+                    
+        return usefulstates,newinitial
+                
         
-        def isSubset(self, new_dfa):
-            intersect = self.Intersection(new_dfa)
-            selfgraph = self.toGraph()
-            new_Graph = intersect.toGraph()
-            if nx.is_isomorphic(selfgraph, new_Graph): return True
-            else: return False
+    def Union(self,other):
+        pass
+        
+    def Difference(self,other):
+        pass
+        
+    def Intersection(self,new_dfa):
+
+        new_states = set()
+        new_initial_state = str()
+        new_accept_states = set()
+        new_transitions = dict()
+        for fstate in self.states:
+            for sstate in new_dfa.states:
+                newstate = fstate + sstate
+                new_states.add(newstate)
+                if fstate in self.accept_states and sstate in new_dfa.accept_states:
+                    new_accept_states.add(fstate+sstate)
+                if fstate == self.initial_state and sstate == new_dfa.initial_state:
+                    new_initial_state = fstate+sstate
+                dest = {}
+                for alpha in self.alphabets:
+                    fgoesto = self.transitions.get(fstate).get(alpha)
+                    sgoesto = new_dfa.transitions.get(sstate).get(alpha)
+                    dest.update({alpha:fgoesto+sgoesto})
+                new_transitions.update({fstate+sstate:dest})
+        dfas = DFA(new_states, self.alphabets, new_initial_state, new_accept_states, new_transitions)
+        return dfas
+
+    def isSubset(self, new_dfa):
+        intersect = self.Intersection(new_dfa)
+        selfgraph = self.toGraph()
+        new_Graph = intersect.toGraph()
+        if nx.is_isomorphic(selfgraph, new_Graph): return True
+        else: return False
+
+
 
 
 
 #   A DFA that accept strings '*aa'
-'''dfa = DFA()
+dfa1 = DFA()
+dfa1.add_state('0')
+dfa1.add_state('1')
+dfa1.add_state('2')
+dfa1.add_alphabet('a')
+dfa1.add_alphabet('b')
+dfa1.add_initial_state('0')
+dfa1.add_accept_state('2')
+dfa1.add_transition('0', 'a', '1')
+dfa1.add_transition('0', 'b', '0')
+dfa1.add_transition('1', 'a', '2')
+dfa1.add_transition('1', 'b', '0')
+dfa1.add_transition('2', 'a', '2')
+dfa1.add_transition('2', 'b', '0')
 
-dfa.add_state('0')
-dfa.add_state('1')
-dfa.add_state('2')
+dfa1.printDFA()
 
-dfa.add_alphabet('a')
-dfa.add_alphabet('b')
+print(dfa1.isAccept('aa'))
 
-dfa.add_initial_state('0')
+print(dfa1.isNull())
 
-dfa.add_accept_state('2')
+print(dfa1.isInfinite())
 
-dfa.add_transition('0', 'a', '1')
-dfa.add_transition('0', 'b', '0')
-dfa.add_transition('1', 'a', '2')
-dfa.add_transition('1', 'b', '0')
-dfa.add_transition('2', 'a', '2')
-dfa.add_transition('2', 'b', '0')
+print(dfa1.acceptStringLength())
 
-dfa.printDFA()
+print(dfa1.maxstringlength())
 
-print(dfa.isAccept('aaaabaa'))
+print(dfa1.minstringlength())
 
-print(dfa.isNull())
+dfa1.Complement().printDFA()
 
-print(dfa.isFinite())'''
+
+
+#   A DFA that accept strings 'b*'
+#dfa2 = DFA({'0', '1', '2'}               #states
+#            , {'a','b'}                  #alphabet
+#            , '0'                        #initial state
+#            , {'1'}                      #accept_states
+#            ,{'0': {'a': '2', 'b': '1'}  #transitions
+#            , '1': {'a': '1', 'b': '1'}  #transitions
+#            , '2': {'a': '2', 'b': '2'}})#transitions
+
+#dfa2.printDFA()
+
+#print(dfa2.isAccept('b'))
+
+#print(dfa2.isNull())
+
+#print(dfa2.isInfinite())
+
+#print(dfa2.acceptStringLength())
+
+#print(dfa2.maxstringlength())
+
+#print(dfa2.minstringlength())
+
+#dfa2.Complement().printDFA()
+
+#dfa1.Intersection(dfa2).printDFA()
+#print(dfa1.Intersection(dfa2).isAccept('baa'))
+
+
+#   A DFA that accept strings 'bb*'
+#dfa3 = DFA({'0', '1', '2', '3'}          #states
+#            , {'a','b'}                  #alphabet
+#            , '0'                        #initial state
+#            , {'1'}                      #accept_states
+#            ,{'0': {'a': '3', 'b': '1'}  #transitions
+#            , '1': {'a': '3', 'b': '2'}  #transitions
+#            , '2': {'a': '2', 'b': '2'}  #transitions
+#            , '3': {'a': '3', 'b': '3'}})#transitions
+
+#print(dfa3.isSubset(dfa2))'''
 
 
 dfa=DFA.DFA({'q0','q1','q2','q3'}#states
