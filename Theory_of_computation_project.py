@@ -66,13 +66,11 @@ class DFA:
         Reachable2Accept = self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
         commonstates = states.intersection(Reachable2Accept)
         sub = graph.subgraph(commonstates)
-            
         try:
-            longest=nx.dag_longest_path_length(sub)
+            longest = nx.dag_longest_path_length(sub)
             return False
         except:
             return True 
-        
         
     def maxstringlength(self):
         if self.isNull(): return 0
@@ -110,7 +108,7 @@ class DFA:
         return newDFA
         
     def NewDFA(dfa1,dfa2):
-        if dfa1.alphabets != dfa2.alphabets: raise Exception('input symbols do not match!')
+        if dfa1.alphabets != dfa2.alphabets: raise Exception('Input symbols DO NOT match!')
         newinitial=dfa1.initial_state+'_'+dfa2.initial_state
         usefulstates={newinitial}
         visited=[newinitial]
