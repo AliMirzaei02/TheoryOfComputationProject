@@ -46,10 +46,9 @@ class DFA:
         
     def isNull(self):
         visited = [self.initial_state]
-        states = [self.initial_state]
+        states = deque([self.initial_state])
         while len(states)>0:
-            state = states[0]
-            del states[0]
+            state = states.popleft()
             for next_state in self.transitions[state].values():
                 if next_state not in visited: 
                     if next_state in self.accept_states: return False
@@ -86,12 +85,11 @@ class DFA:
             return nx.dag_longest_path_length(sub) + 1
             
     def minstringlength(self):
-        queue = deque()
+        queue = deque([self.initial_state])
         distances = defaultdict(lambda: None)
         distances[self.initial_state] = 0
-        queue.append(self.initial_state)
         while queue:
-            state = queue.popleft()            
+            state = queue.popleft()
             if state in self.accept_states:
                 return distances[state]
             for next_state in self.transitions[state].values():
