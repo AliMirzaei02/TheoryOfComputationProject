@@ -8,9 +8,16 @@ dfa=auto.DFA({'q0','q1','q2','q3'}#states
             ,'q2':{'a':'q3','b':'q0'}#transitions
             ,'q3':{'a':'q3','b':'q3'}}#transitions
             ,{'q3'})#Accept state
-if dfa.checkstring('b'):
+if dfa.checkstring('bbababa'):
     print('Accepted')
 else: print('Rejected')
 if dfa.NullCheck():
     print('Null')
 else: print('Not Null')
+if dfa.FiniteCheck(): print('Finite')
+else: print('Infinite')
+print(dfa.maxstringlength())
+print(dfa.minstringlength())
+DFAComplement=dfa.Complement()
+if DFAComplement.checkstring('bbababa'): print('Accepted') 
+else: print('Rejected')

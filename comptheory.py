@@ -35,13 +35,12 @@ class auto:
         def FiniteCheck(self):
             if self.NullCheck(): return True
             graph=netx.DiGraph([(start_state, end_state)
-            for start_state, transition in self.transitions.items()
+            for start_state, transition in self.transition.items()
             for end_state in transition.values()])
             states=netx.descendants(graph, self.initial)
             Reachable2Accept=self.Accept.union(*(netx.ancestors(graph,state)for state in self.Accept))
             commonstates=states.intersection(Reachable2Accept)
             sub=graph.subgraph(commonstates)
-            # from here
             try:
                 longest=netx.dag_longest_path_length(sub)
                 return True
@@ -60,27 +59,42 @@ class auto:
                 commonstates=states.intersection(Reachable2Accept)
                 sub=graph.subgraph(commonstates)
                 return netx.dag_longest_path_length(sub) 
+            
         def minstringlength(self):
-            # Return MinimumWordLength Accepted, start from initial state and search with length 1, then increase length
             queue = deque()
-            #Distances: Dictionary for storing states with them length
             distances = defaultdict(lambda: None)
-            distances[self.initial_state] = 0
-            queue.append(self.initial_state)
+            distances[self.initial] = 0
+            queue.append(self.initial)
             while queue:
                 state = queue.popleft()
-                # Breaking Condition, We Reach final state and return length of path to reaching this state which is final
-                if state in self.final_states:
+                
+                if state in self.Accept:
                     return distances[state]
-                for next_state in self.transitions[state].values():
+                for next_state in self.transition[state].values():
                     if distances[next_state] is None:
                         distances[next_state] = distances[state] + 1
                         queue.append(next_state)
             return 0
-        def complement(self):
+        
+        def Complement(self):
             NewAccept=set()
             for state in self.states:
                 if state not in self.Accept: NewAccept.add(state)
             NewDFA=auto.DFA(self.states,self.alphabet,self.initial,self.transition, NewAccept)
             return NewDFA
         
+        def NewDFA(dfa1,dfa2):
+            if dfa1.alphabet != dfa2.alphabet: raise Exception('input symbols do not match!')
+            newstates={}
+            for state1 in dfa1:
+                for state2 in dfa2:
+                    newstates.add(state1+state2)
+            newinitial=dfa1.initial+dfa2.initial
+            usefulstates={newinitial}
+            visited=[newinitial]
+            while len(visited)>0:
+                state=visited.pop(0)
+                
+        
+        def Union(self,other)->self:
+            
