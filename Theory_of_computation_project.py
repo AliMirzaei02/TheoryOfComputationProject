@@ -57,8 +57,8 @@ class DFA:
                     states.append(next_state)
         return True
             
-    def isFinite(self):
-        if self.isNull(): return True
+    def isInfinite(self):
+        if self.isNull(): return False
         graph = nx.DiGraph([(start_state, end_state)
         for start_state, transition in self.transitions.items()
         for end_state in transition.values()])
@@ -69,14 +69,14 @@ class DFA:
             
         try:
             longest=nx.dag_longest_path_length(sub)
-            return True
+            return False
         except:
-            return False 
+            return True 
         
         
     def maxstringlength(self):
         if self.isNull(): return 0
-        if not self.isFinite(): return "the language is not finite."
+        elif self.isInfinite(): return "The language is infinite."
         else:
             graph=nx.DiGraph([(start_state, end_state)
             for start_state, transition in self.transitions.items()
@@ -85,7 +85,7 @@ class DFA:
             Reachable2Accept=self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
             commonstates=states.intersection(Reachable2Accept)
             sub=graph.subgraph(commonstates)
-            return nx.dag_longest_path_length(sub) 
+            return nx.dag_longest_path_length(sub) + 1
             
     def minstringlength(self):
         queue = deque()
@@ -162,24 +162,31 @@ print(dfa1.isAccept('aaaabaa'))
 
 print(dfa1.isNull())
 
-print(dfa1.isFinite())
+print(dfa1.isInfinite())
+
+print(dfa1.maxstringlength())
+
+print(dfa1.minstringlength())
 
 
 
-#   A DFA that accept strings '*bb*'
-dfa2 = DFA({'0','1','2','3'}         #states
-            ,{'a','b'}               #alphabet
-            ,'0'                     #initial state
-            ,{'2'}                   #accept_states
-            ,{'0':{'a':'3','b':'1'}  #transitions
-            , '1':{'a':'3','b':'2'}  #transitions
-            , '2':{'a':'2','b':'2'}  #transitions
-            , '3':{'a':'3','b':'3'}})#transitions
+#   A DFA that accept strings 'b*'
+dfa2 = DFA({'0', '1', '2'}               #states
+            , {'a','b'}                  #alphabet
+            , '0'                        #initial state
+            , {'1'}                      #accept_states
+            ,{'0': {'a': '2', 'b': '1'}  #transitions
+            , '1': {'a': '1', 'b': '1'}  #transitions
+            , '2': {'a': '2', 'b': '2'}})#transitions
 
 dfa2.printDFA()
 
-print(dfa2.isAccept('bbaaaabaa'))
+print(dfa2.isAccept('bbaba'))
 
 print(dfa2.isNull())
 
-print(dfa2.isFinite())
+print(dfa2.isInfinite())
+
+print(dfa2.maxstringlength())
+
+print(dfa2.minstringlength())
