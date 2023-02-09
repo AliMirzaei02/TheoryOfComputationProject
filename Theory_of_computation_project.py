@@ -13,14 +13,14 @@ class DFA:
     def add_state(self, state):
         self.states.add(state)
 
-        def add_alphabet(self, alpha):
-            self.alphabets.add(alpha)
+    def add_alphabet(self, alpha):
+        self.alphabets.add(alpha)
 
-        def add_initial_state(self, initial_state):
-            self.initial_state = initial_state
+    def add_initial_state(self, initial_state):
+        self.initial_state = initial_state
 
-        def add_accept_state(self, accept_state):
-            self.accept_states.add(accept_state)
+    def add_accept_state(self, accept_state):
+        self.accept_states.add(accept_state)
 
     def add_transition(self, state, alpha, dest):
         if state in self.transitions:
@@ -42,12 +42,12 @@ class DFA:
         print("transitions are:   ", self.transitions)
         print("**************************************\n")
 
-        def isAccept(self, test_string:str):
-                state = self.initial_state
-                for symbol in test_string:
-                    state = self.transitions[state][symbol]
-                if state in self.accept_states: return True
-                else: return False
+    def isAccept(self, test_string:str):
+            state = self.initial_state
+            for symbol in test_string:
+                state = self.transitions[state][symbol]
+            if state in self.accept_states: return True
+            else: return False
         
     def isNull(self):
         visited = [self.initial_state]
