@@ -106,8 +106,8 @@ class DFA:
         NewAccept=set()
         for state in self.states:
             if state not in self.accept_states: NewAccept.add(state)
-        NewDFA=DFA(self.states,self.alphabets,self.initial_state,self.transitions, NewAccept)
-        return NewDFA
+        newDFA = DFA(self.states, self.alphabets, self.initial_state, NewAccept, self.transitions)
+        return newDFA
         
     def NewDFA(dfa1,dfa2):
         if dfa1.alphabets != dfa2.alphabets: raise Exception('input symbols do not match!')
@@ -168,6 +168,8 @@ print(dfa1.maxstringlength())
 
 print(dfa1.minstringlength())
 
+dfa1.Complement().printDFA()
+
 
 
 #   A DFA that accept strings 'b*'
@@ -190,3 +192,5 @@ print(dfa2.isInfinite())
 print(dfa2.maxstringlength())
 
 print(dfa2.minstringlength())
+
+dfa2.Complement().printDFA()
