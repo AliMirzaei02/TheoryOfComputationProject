@@ -41,5 +41,10 @@ class auto:
             commonstates=states.intersection(Reachable2Accept)
             sub=graph.subgraph(commonstates)
             # from here
+            try:
+                longest=netx.dag_longest_path_length(sub)
+                return True
+            except:
+                return False 
             
         
