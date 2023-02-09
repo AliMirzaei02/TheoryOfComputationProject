@@ -75,7 +75,7 @@ class DFA:
             return True 
 
     def acceptStringLength(self):
-        if not(self.isInfinite() and self.isNull()):
+        if not(self.isInfinite() or self.isNull()):
             max_string_length = self.maxstringlength()
             if max_string_length:
                 min_string_length = self.minstringlength()
@@ -88,6 +88,7 @@ class DFA:
                             if len(path) == word_length:
                                 count += 1
                 return count
+        else: print("Infinite length!")
    
     def maxstringlength(self):
         if self.isNull(): return 0
@@ -98,7 +99,7 @@ class DFA:
             Reachable2Accept=self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
             commonstates=states.intersection(Reachable2Accept)
             sub=graph.subgraph(commonstates)
-            return nx.dag_longest_path_length(sub) + 1
+            return int(nx.dag_longest_path_length(sub) + 1)
             
     def minstringlength(self):
         queue = deque([self.initial_state])
@@ -202,9 +203,9 @@ print(dfa1.isInfinite())
 
 print(dfa1.acceptStringLength())
 
-print(dfa1.maxstringlength())
+print(type(dfa1.maxstringlength()))
 
-print(dfa1.minstringlength())
+print(type(dfa1.minstringlength()))
 
 dfa1.Complement().printDFA()
 
