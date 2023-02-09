@@ -1,4 +1,5 @@
 import networkx as netx
+from collections import defaultdict, deque
 
 class auto:
     class DFA():
@@ -59,4 +60,20 @@ class auto:
                 commonstates=states.intersection(Reachable2Accept)
                 sub=graph.subgraph(commonstates)
                 return netx.dag_longest_path_length(sub) 
-        
+        def minstringlength(self):
+            # Return MinimumWordLength Accepted, start from initial state and search with length 1, then increase length
+            queue = deque()
+            #Distances: Dictionary for storing states with them length
+            distances = defaultdict(lambda: None)
+            distances[self.initial_state] = 0
+            queue.append(self.initial_state)
+            while queue:
+                state = queue.popleft()
+                # Breaking Condition, We Reach final state and return length of path to reaching this state which is final
+                if state in self.final_states:
+                    return distances[state]
+                for next_state in self.transitions[state].values():
+                    if distances[next_state] is None:
+                        distances[next_state] = distances[state] + 1
+                        queue.append(next_state)
+            return 0
