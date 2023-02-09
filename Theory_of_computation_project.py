@@ -13,14 +13,14 @@ class DFA:
     def add_state(self, state):
         self.states.add(state)
 
-    def add_alphabet(self, alpha):
-        self.alphabets.add(alpha)
+        def add_alphabet(self, alpha):
+            self.alphabets.add(alpha)
 
-    def add_initial_state(self, initial_state):
-        self.initial_state = initial_state
+        def add_initial_state(self, initial_state):
+            self.initial_state = initial_state
 
-    def add_accept_state(self, accept_state):
-        self.accept_states.add(accept_state)
+        def add_accept_state(self, accept_state):
+            self.accept_states.add(accept_state)
 
     def add_transition(self, state, alpha, dest):
         if state in self.transitions:
@@ -42,12 +42,12 @@ class DFA:
         print("transitions are:   ", self.transitions)
         print("**************************************\n")
 
-    def isAccept(self, test_string:str):
-            state = self.initial_state
-            for symbol in test_string:
-                state = self.transitions[state][symbol]
-            if state in self.accept_states: return True
-            else: return False
+        def isAccept(self, test_string:str):
+                state = self.initial_state
+                for symbol in test_string:
+                    state = self.transitions[state][symbol]
+                if state in self.accept_states: return True
+                else: return False
         
     def isNull(self):
         visited = [self.initial_state]
@@ -98,7 +98,7 @@ class DFA:
             Reachable2Accept=self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
             commonstates=states.intersection(Reachable2Accept)
             sub=graph.subgraph(commonstates)
-            return int(nx.dag_longest_path_length(sub) + 1)
+            return nx.dag_longest_path_length(sub) + 1
             
     def minstringlength(self):
         queue = deque([self.initial_state])
@@ -143,27 +143,7 @@ class DFA:
         pass
         
     def Intersection(self,new_dfa):
-
-        new_states = set()
-        new_initial_state = str()
-        new_accept_states = set()
-        new_transitions = dict()
-        for fstate in self.states:
-            for sstate in new_dfa.states:
-                newstate = fstate + sstate
-                new_states.add(newstate)
-                if fstate in self.accept_states and sstate in new_dfa.accept_states:
-                    new_accept_states.add(fstate+sstate)
-                if fstate == self.initial_state and sstate == new_dfa.initial_state:
-                    new_initial_state = fstate+sstate
-                dest = {}
-                for alpha in self.alphabets:
-                    fgoesto = self.transitions.get(fstate).get(alpha)
-                    sgoesto = new_dfa.transitions.get(sstate).get(alpha)
-                    dest.update({alpha:fgoesto+sgoesto})
-                new_transitions.update({fstate+sstate:dest})
-        dfas = DFA(new_states, self.alphabets, new_initial_state, new_accept_states, new_transitions)
-        return dfas
+        pass
 
     def isSubset(self, new_dfa):
         intersect = self.Intersection(new_dfa)
@@ -249,4 +229,42 @@ dfa1.Complement().printDFA()
 #            , '2': {'a': '2', 'b': '2'}  #transitions
 #            , '3': {'a': '3', 'b': '3'}})#transitions
 
-#print(dfa3.isSubset(dfa2))
+#print(dfa3.isSubset(dfa2))'''
+
+
+dfa=DFA.DFA({'q0','q1','q2','q3'}#states
+            ,{'a','b'}#alphabet
+            ,'q0'#initial state
+            ,{'q0':{'a':'q1','b':'q2'}#transitions
+            ,'q1':{'a':'q1','b':'q0'}#transitions
+            ,'q2':{'a':'q3','b':'q0'}#transitions
+            ,'q3':{'a':'q3','b':'q3'}}#transitions
+            ,{'q3'})#Accept state
+if dfa.isAccept('b'):
+    print('Accepted')
+else: print('Rejected')
+if dfa.isNull():
+    print('Null')
+else: print('Not Null')
+
+
+dfa1=DFA.DFA({'q0','q1'},
+             {'a','b'},
+             'q0',
+             {'q0':{'a':'q1','b':'q0'},
+              'q1':{'a':'q1','b':'q0'}},
+             {'q1'}
+             )
+
+dfa2=DFA.DFA({'p0','p1','p2'},
+             {'a','b'},
+             'p0',
+             {'p0':{'a':'p2','b':'p1'},
+              'p1':{'a':'p1','b':'p1'},
+              'p2':{'a':'p2','b':'p2'}},
+             {'p1'}
+             )
+print(1)
+usefulstate,newinitial,newtransitions=dfa1.NewDFA(dfa1,dfa2)
+print(2)
+print(usefulstate,'\n',newinitial,'\n',newtransitions)
