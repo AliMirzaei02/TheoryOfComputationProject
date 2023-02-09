@@ -1,11 +1,11 @@
-
 #   TheoryOfComputationProject by Ali mirzaei and Bardia Vahedi
+import networkx as nx
 
 class DFA:
     def __init__(self):
         self.states = set()
         self.alphabets = set()
-        self.start_state = str()
+        self.initial_state = str()
         self.accept_states = set()
         self.transitions = dict()
     
@@ -15,8 +15,8 @@ class DFA:
     def add_alphabet(self, alpha):
         self.alphabets.add(alpha)
 
-    def add_start_state(self, start_state):
-        self.start_state = start_state
+    def add_initial_state(self, initial_state):
+        self.initial_state = initial_state
 
     def add_accept_state(self, accept_state):
         self.accept_states.add(accept_state)
@@ -32,43 +32,42 @@ class DFA:
     def printDFA(self):
         print("states are:        ", self.states)
         print("alphabets are:     ", self.alphabets)
-        print("start_state is:    ", self.start_state)
+        print("initial_state is:  ", self.initial_state)
         print("accept_states are: ", self.accept_states)
         print("transitions are:   ", self.transitions)
 
-    def checkstring(self, string2check:str):
-            state=self.initial
-            for symbol in string2check:
-                state=self.transition[state][symbol]
-                print(state)
-            if state in self.Accept: return True
-            return False
+    def isAccept(self, test_string:str):
+            state = self.initial_state
+            for symbol in test_string:
+                state = self.transitions[state][symbol]
+            if state in self.accept_states: return True
+            else: return False
         
-    def NullCheck(self):
-        visited=[self.initial]
-        states=[self.initial]
+    def isNull(self):
+        visited = [self.initial_state]
+        states = [self.initial_state]
         while len(states)>0:
-            state=states[0]
+            state = states[0]
             del states[0]
-            for next_state in self.transition[state].values():
+            for next_state in self.transitions[state].values():
                 if next_state not in visited: 
-                    if next_state in self.Accept: return False
+                    if next_state in self.accept_states: return False
                     visited.append(next_state)
                     states.append(next_state)
         return True
             
-    def FiniteCheck(self):
-        if self.NullCheck(): return True
-        graph=netx.DiGraph([(start_state, end_state)
+    def isFinite(self):
+        if self.isNull(): return True
+        graph = nx.DiGraph([(start_state, end_state)
         for start_state, transition in self.transitions.items()
         for end_state in transition.values()])
-        states=netx.descendants(graph, self.initial)
-        Reachable2Accept=self.Accept.union(*(netx.ancestors(graph,state)for state in self.Accept))
-        commonstates=states.intersection(Reachable2Accept)
-        sub=graph.subgraph(commonstates)
+        states = nx.descendants(graph, self.initial_state)
+        Reachable2Accept = self.accept_states.union(*(nx.ancestors(graph,state)for state in self.accept_states))
+        commonstates = states.intersection(Reachable2Accept)
+        sub = graph.subgraph(commonstates)
             
         try:
-            longest=netx.dag_longest_path_length(sub)
+            longest=nx.dag_longest_path_length(sub)
             return True
         except:
             return False 
@@ -86,7 +85,7 @@ dfa.add_state('2')
 dfa.add_alphabet('a')
 dfa.add_alphabet('b')
 
-dfa.add_start_state('0')
+dfa.add_initial_state('0')
 
 dfa.add_accept_state('2')
 
@@ -99,6 +98,8 @@ dfa.add_transition('2', 'b', '0')
 
 dfa.printDFA()
 
-dfa.isAccept('aaaabaa')
+print(dfa.isAccept('aaaabaa'))
 
-dfa.isEmpty()
+print(dfa.isNull())
+
+print(dfa.isFinite())
