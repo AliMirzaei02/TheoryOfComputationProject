@@ -150,16 +150,17 @@ class DFA:
     def Union(self,other):
         newstates,newinitial,newtransitions=self.NewDFA(other)
         newaccepts=set()
+        newDFA = DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
         for state in newstates:
             state1, state2 = state.split('_')
             #print(state1)
             #print(state2)
             if state1 in self.accept_states or state2 in other.accept_states:
-                newaccepts.add(state1+'_'+state2)
-        newDFA = DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
-        return newDFA        
-                
-    
+                if state in newDFA.reachableStates():
+                    newDFA.add_accept_state(state1+'_'+state2)
+        return newDFA
+
+
 #    @classmethod
 #    def Union(cls,dfa1,dfa2):
 #        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa2)
@@ -177,13 +178,14 @@ class DFA:
     def Difference(self,other):
         newstates,newinitial,newtransitions=self.NewDFA(other)
         newaccepts=set()
+        newDFA = DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
         for state in newstates:
             state1, state2 = state.split('_')
             #print(state1)
             #print(state2)
             if state1 in self.accept_states and state2 not in other.accept_states:
-                newaccepts.add(state1+'_'+state2)
-        newDFA = DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
+                if state in newDFA.reachableStates():
+                    newDFA.add_accept_state(state1+'_'+state2)
         return newDFA
     
     
@@ -201,15 +203,15 @@ class DFA:
         
     def Intersection(self,other):
         newstates,newinitial,newtransitions=self.NewDFA(other)
-        #def __init__(self, states=set(), alphabets=set(), initial_state=str(), accept_states=set(), transitions=dict()):
         newaccepts=set()
+        newDFA = DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
         for state in newstates:
             state1, state2 = state.split('_')
             #print(state1)
             #print(state2)
             if state1 in self.accept_states and state2 in other.accept_states:
-                newaccepts.add(state1+'_'+state2)
-        newDFA = DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
+                if state in newDFA.reachableStates():
+                    newDFA.add_accept_state(state1+'_'+state2)
         return newDFA
     
 #    @classmethod
