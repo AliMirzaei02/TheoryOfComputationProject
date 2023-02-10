@@ -10,6 +10,12 @@ class DFA:
         self.accept_states = accept_states
         self.transitions = transitions
 
+        self.Union = self.__Union
+        self.Difference = self.__Difference
+        self.Intersection = self.__Intersection
+        self.isSubset = self.__isSubset
+        self.isDisjoint = self.__isDisjoint
+
 
     def add_state(self, state):
         self.states.add(state)
@@ -159,7 +165,7 @@ class DFA:
             return usefulstates,newinitial,newtransitions
 
 
-    def Union(self,other):
+    def __Union(self,other):
         newstates, newinitial, newtransitions = self.NewDFA(other)
         newaccepts = set()
         newDFA = DFA(newstates, self.alphabets, newinitial, newaccepts, newtransitions)
@@ -172,22 +178,22 @@ class DFA:
                     newDFA.add_accept_state(state1+'_'+state2)
         return newDFA
 
-#    @classmethod
-#    def Union(cls,dfa1,dfa2):
-#        newstates, newinitial, newtransitions = dfa1.NewDFA(dfa2)
-#        newaccepts = set()
-#        newDFA = DFA(newstates, dfa1.alphabets, newinitial, newaccepts, newtransitions)
-#        for state in newstates:
-#            state1, state2 = state.split('_')
-#            #print(state1)
-#            #print(state2)
-#            if state1 in dfa1.accept_states or state2 in dfa2.accept_states:
-#                if state in newDFA.reachableStates():
-#                    newDFA.add_accept_state(state1+'_'+state2)
-#        return newDFA
+    @classmethod
+    def Union(cls,dfa1,dfa2):
+        newstates, newinitial, newtransitions = dfa1.NewDFA(dfa2)
+        newaccepts = set()
+        newDFA = DFA(newstates, dfa1.alphabets, newinitial, newaccepts, newtransitions)
+        for state in newstates:
+            state1, state2 = state.split('_')
+            #print(state1)
+            #print(state2)
+            if state1 in dfa1.accept_states or state2 in dfa2.accept_states:
+                if state in newDFA.reachableStates():
+                    newDFA.add_accept_state(state1+'_'+state2)
+        return newDFA
 
 
-    def Difference(self,other):
+    def __Difference(self,other):
         newstates, newinitial, newtransitions = self.NewDFA(other)
         newaccepts = set()
         newDFA = DFA(newstates, self.alphabets, newinitial, newaccepts, newtransitions)
@@ -200,22 +206,22 @@ class DFA:
                     newDFA.add_accept_state(state1+'_'+state2)
         return newDFA
 
-#    @classmethod
-#    def Difference(cls,dfa1,dfa2):
-#        newstates, newinitial, newtransitions = dfa1.NewDFA(dfa2)
-#        newaccepts = set()
-#        newDFA = DFA(newstates, dfa1.alphabets, newinitial, newaccepts, newtransitions)
-#        for state in newstates:
-#            state1, state2 = state.split('_')
-#            #print(state1)
-#            #print(state2)
-#            if state1 in dfa1.accept_states and state2 not in dfa2.accept_states:
-#                if state in newDFA.reachableStates():
-#                    newDFA.add_accept_state(state1+'_'+state2)
-#        return newDFA
+    @classmethod
+    def Difference(cls,dfa1,dfa2):
+        newstates, newinitial, newtransitions = dfa1.NewDFA(dfa2)
+        newaccepts = set()
+        newDFA = DFA(newstates, dfa1.alphabets, newinitial, newaccepts, newtransitions)
+        for state in newstates:
+            state1, state2 = state.split('_')
+            #print(state1)
+            #print(state2)
+            if state1 in dfa1.accept_states and state2 not in dfa2.accept_states:
+                if state in newDFA.reachableStates():
+                    newDFA.add_accept_state(state1+'_'+state2)
+        return newDFA
 
 
-    def Intersection(self,other):
+    def __Intersection(self,other):
         newstates, newinitial, newtransitions = self.NewDFA(other)
         newaccepts = set()
         newDFA = DFA(newstates, self.alphabets, newinitial, newaccepts, newtransitions)
@@ -228,39 +234,39 @@ class DFA:
                     newDFA.add_accept_state(state1+'_'+state2)
         return newDFA
 
-#    @classmethod
-#    def Intersection(cls,dfa1,dfa2):
-#        newstates, newinitial, newtransitions = dfa1.NewDFA(dfa2)
-#        newaccepts = set()
-#        newDFA = DFA(newstates, dfa1.alphabets, newinitial, newaccepts, newtransitions)
-#        for state in newstates:
-#            state1, state2 = state.split('_')
-#            #print(state1)
-#            #print(state2)
-#            if state1 in dfa1.accept_states and state2 in dfa2.accept_states:
-#                if state in newDFA.reachableStates():
-#                    newDFA.add_accept_state(state1+'_'+state2)
-#        return newDFA
+    @classmethod
+    def Intersection(cls,dfa1,dfa2):
+        newstates, newinitial, newtransitions = dfa1.NewDFA(dfa2)
+        newaccepts = set()
+        newDFA = DFA(newstates, dfa1.alphabets, newinitial, newaccepts, newtransitions)
+        for state in newstates:
+            state1, state2 = state.split('_')
+            #print(state1)
+            #print(state2)
+            if state1 in dfa1.accept_states and state2 in dfa2.accept_states:
+                if state in newDFA.reachableStates():
+                    newDFA.add_accept_state(state1+'_'+state2)
+        return newDFA
 
 
-    def isSubset(self, other):
+    def __isSubset(self, other):
         #self.Difference(other).printDFA()
         return not len(self.Difference(other).accept_states)
 
-#    @classmethod
-#    def isSubset(cls,dfa1,dfa2):
-#        #self.Difference(other).printDFA()
-#        return not len(self.Difference(other).accept_states)
+    @classmethod
+    def isSubset(cls,dfa1,dfa2):
+        #self.Difference(other).printDFA()
+        return not len(DFA.Difference(dfa1, dfa2).accept_states)
 
 
-    def isDisjoint(self, other):
+    def __isDisjoint(self, other):
         #self.Intersection(other).printDFA()
         return not len(self.Intersection(other).accept_states)
 
-#    @classmethod
-#    def isDisjoint(cls,dfa1,dfa2):
-#        #self.Intersection(other).printDFA()
-#        return not len(self.Intersection(other).accept_states)
+    @classmethod
+    def isDisjoint(cls,dfa1,dfa2):
+        #self.Intersection(other).printDFA()
+        return not len(DFA.Intersection(dfa1, dfa2).accept_states)
 
 
 
@@ -340,8 +346,8 @@ dfa3 = DFA({'0', '1', '2'}          #states
 
 #dfa3.printDFA()
 
-print(dfa3.isSubset(dfa2))
-print(dfa3.isDisjoint(dfa2))
+#print(dfa3.isSubset(dfa2))
+#print(dfa3.isDisjoint(dfa2))
 #print(DFA.isSubset(dfa3, dfa2))
 #dfa2.Intersection(dfa3).printDFA()
 #DFA.Intersection(dfa2, dfa3).printDFA()
