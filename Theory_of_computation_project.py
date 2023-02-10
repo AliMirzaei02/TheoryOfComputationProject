@@ -143,6 +143,36 @@ class DFA:
         
     def Union(self,other):
         newstates,newinitial,newtransitions=self.NewDFA(self,other)
+        newaccepts={}
+        for state1 in self.accept_states:
+            for state2 in other.states:
+                newaccepts.add(state1+'_'+state2)
+        for state1 in self.states:
+            for state2 in other.accept_states:
+                newaccepts.add(state1+'_'+state2)
+        newDFA=DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
+        return newDFA        
+                
+    
+    @classmethod
+    def Union(cls,dfa1,dfa2):
+        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa1,dfa2)
+        newaccepts={}
+        for state1 in dfa1.accept_states:
+            for state2 in dfa2.states:
+                newaccepts.add(state1+'_'+state2)
+        for state1 in dfa1.states:
+            for state2 in dfa2.accept_states:
+                newaccepts.add(state1+'_'+state2)
+        newDFA=DFA(newstates,dfa1.alphabets,newinitial,newaccepts,newtransitions)
+        return newDFA
+    
+    
+    def Difference(self,other):
+        pass
+        
+    def Intersection(self,new_dfa):
+        newstates,newinitial,newtransitions=self.NewDFA(self,other)
         #def __init__(self, states=set(), alphabets=set(), initial_state=str(), accept_states=set(), transitions=dict()):
         newaccepts={}
         for state1 in self.states:
@@ -152,10 +182,9 @@ class DFA:
                     newaccepts.add(state1+'_'+state2)
         newDFA=DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
         return newDFA
-                
     
     @classmethod
-    def Union(cls,dfa1,dfa2):
+    def Intersection(cls,dfa1,dfa2):
         newstates,newinitial,newtransitions=dfa1.NewDFA(dfa1,dfa2)
         newaccepts={}
         for state1 in dfa1.states:
@@ -165,14 +194,9 @@ class DFA:
                     newaccepts.add(state1+'_'+state2)
         newDFA = DFA(newstates,dfa1.alphabets,newinitial,newaccepts,newtransitions)
         return newDFA
-    
-    
-    def Difference(self,other):
-        pass
         
-    def Intersection(self,new_dfa):
-        pass
-
+        
+        
     def isSubset(self, new_dfa):
         intersect = self.Intersection(new_dfa)
         selfgraph = self.toGraph()
