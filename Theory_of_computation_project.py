@@ -9,7 +9,8 @@ class DFA:
         self.initial_state = initial_state
         self.accept_states = accept_states
         self.transitions = transitions
-    
+
+
     def add_state(self, state):
         self.states.add(state)
 
@@ -30,8 +31,10 @@ class DFA:
             self.destination[alpha] = dest
             self.transitions[state] = self.destination
 
+
     def toGraph(self):
         return nx.DiGraph([(start_state, dest_state) for start_state, transition in self.transitions.items() for dest_state in transition.values()])
+
 
     def reachableStates(self):
         visited = set(self.initial_state)
@@ -44,6 +47,7 @@ class DFA:
                     states.append(next_state)
         return visited
 
+
     def printDFA(self):
         print("\n**************************************")
         print("states are:        ", self.states)
@@ -53,6 +57,7 @@ class DFA:
         print("transitions are:   ", self.transitions)
         print("**************************************\n")
 
+
     def isAccept(self, test_string:str):
             state = self.initial_state
             for symbol in test_string:
@@ -60,12 +65,14 @@ class DFA:
             if state in self.accept_states: return True
             else: return False
 
+
     def isNull(self):
         for reachable in self.reachableStates():
             print(reachable)
             if reachable in self.accept_states:
                 return False
         return True
+
 
     def isInfinite(self):
         if self.isNull(): return False
@@ -79,6 +86,7 @@ class DFA:
             return False
         except:
             return True 
+
 
     def acceptStringLength(self):
         if not(self.isInfinite() or self.isNull()):
@@ -94,7 +102,8 @@ class DFA:
                             if len(path) == word_length:
                                 count += 1
                 return count
-   
+
+
     def maxstringlength(self):
         if self.isNull(): return 0
         elif self.isInfinite(): return "Infinite!"
@@ -105,7 +114,8 @@ class DFA:
             commonstates=states.intersection(Reachable2Accept)
             sub=graph.subgraph(commonstates)
             return nx.dag_longest_path_length(sub) + 1
-            
+
+
     def minstringlength(self):
         queue = deque([self.initial_state])
         distances = defaultdict(lambda: None)
@@ -119,14 +129,16 @@ class DFA:
                     distances[next_state] = distances[state] + 1
                     queue.append(next_state)
         return 0
-        
+
+
     def Complement(self):
         NewAccept=set()
         for state in self.states:
             if state not in self.accept_states: NewAccept.add(state)
         newDFA = DFA(self.states, self.alphabets, self.initial_state, NewAccept, self.transitions)
         return newDFA
-        
+
+
     def NewDFA(self,dfa2):
             seen=[]
             if self.alphabets != dfa2.alphabets: raise Exception('input symbols do not match!')
@@ -145,12 +157,12 @@ class DFA:
                     usefulstates.add(nextdfastate)
                 seen.append(state)
             return usefulstates,newinitial,newtransitions
-                
-        
+
+
     def Union(self,other):
-        newstates,newinitial,newtransitions=self.NewDFA(other)
-        newaccepts=set()
-        newDFA = DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
+        newstates, newinitial, newtransitions = self.NewDFA(other)
+        newaccepts = set()
+        newDFA = DFA(newstates, self.alphabets, newinitial, newaccepts, newtransitions)
         for state in newstates:
             state1, state2 = state.split('_')
             #print(state1)
@@ -160,25 +172,25 @@ class DFA:
                     newDFA.add_accept_state(state1+'_'+state2)
         return newDFA
 
-
 #    @classmethod
 #    def Union(cls,dfa1,dfa2):
-#        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa2)
-#        newaccepts=set()
-#        for state1 in dfa1.accept_states:
-#            for state2 in dfa2.states:
-#                newaccepts.add(state1+'_'+state2)
-#        for state1 in dfa1.states:
-#            for state2 in dfa2.accept_states:
-#                newaccepts.add(state1+'_'+state2)
-#        newDFA=DFA(newstates,dfa1.alphabets,newinitial,newaccepts,newtransitions)
+#        newstates, newinitial, newtransitions = dfa1.NewDFA(dfa2)
+#        newaccepts = set()
+#        newDFA = DFA(newstates, dfa1.alphabets, newinitial, newaccepts, newtransitions)
+#        for state in newstates:
+#            state1, state2 = state.split('_')
+#            #print(state1)
+#            #print(state2)
+#            if state1 in dfa1.accept_states or state2 in dfa2.accept_states:
+#                if state in newDFA.reachableStates():
+#                    newDFA.add_accept_state(state1+'_'+state2)
 #        return newDFA
-    
-    
+
+
     def Difference(self,other):
-        newstates,newinitial,newtransitions=self.NewDFA(other)
-        newaccepts=set()
-        newDFA = DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
+        newstates, newinitial, newtransitions = self.NewDFA(other)
+        newaccepts = set()
+        newDFA = DFA(newstates, self.alphabets, newinitial, newaccepts, newtransitions)
         for state in newstates:
             state1, state2 = state.split('_')
             #print(state1)
@@ -187,24 +199,26 @@ class DFA:
                 if state in newDFA.reachableStates():
                     newDFA.add_accept_state(state1+'_'+state2)
         return newDFA
-    
-    
+
 #    @classmethod
 #    def Difference(cls,dfa1,dfa2):
-#        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa2)
-#        newaccepts=set()
-#        for state1 in dfa1.accept_states:
-#            for state2 in dfa2.states:
-#                if state2 not in dfa2.accept_states:
-#                    newaccepts.add(state1+'_'+state2)
-#        newDFA=DFA(newstates,dfa1.alphabets,newinitial,newaccepts,newtransitions)
+#        newstates, newinitial, newtransitions = dfa1.NewDFA(dfa2)
+#        newaccepts = set()
+#        newDFA = DFA(newstates, dfa1.alphabets, newinitial, newaccepts, newtransitions)
+#        for state in newstates:
+#            state1, state2 = state.split('_')
+#            #print(state1)
+#            #print(state2)
+#            if state1 in dfa1.accept_states and state2 not in dfa2.accept_states:
+#                if state in newDFA.reachableStates():
+#                    newDFA.add_accept_state(state1+'_'+state2)
 #        return newDFA
-    
-        
+
+
     def Intersection(self,other):
-        newstates,newinitial,newtransitions=self.NewDFA(other)
-        newaccepts=set()
-        newDFA = DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
+        newstates, newinitial, newtransitions = self.NewDFA(other)
+        newaccepts = set()
+        newDFA = DFA(newstates, self.alphabets, newinitial, newaccepts, newtransitions)
         for state in newstates:
             state1, state2 = state.split('_')
             #print(state1)
@@ -213,57 +227,46 @@ class DFA:
                 if state in newDFA.reachableStates():
                     newDFA.add_accept_state(state1+'_'+state2)
         return newDFA
-    
+
 #    @classmethod
 #    def Intersection(cls,dfa1,dfa2):
-#        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa2)
-#        newaccepts=set()
-#        for state1 in dfa1.states:
-#            if state1 not in dfa1.accept_states:continue
-#            for state2 in dfa2.states:
-#                if state2 in dfa2.accept_states:
-#                    newaccepts.add(state1+'_'+state2)
-#        newDFA = DFA(newstates,dfa1.alphabets,newinitial,newaccepts,newtransitions)
-#        return newDFA
-
-    def isSubset(self, other):
-        newstates, newinitial, newtransitions = self.NewDFA(other)
-        newaccepts = set()
-        #print(newstates)
-        for state in newstates:
-            state1, state2 = state.split('_')
-            #print(state1)
-            #print(state2)
-            if state1 in self.accept_states and state2 not in other.accept_states:
-                newaccepts.add(state1+'_'+state2)
-        return not len(newaccepts)
-
-#    @classmethod
-#    def isSubset(cls,dfa1,dfa2):
 #        newstates, newinitial, newtransitions = dfa1.NewDFA(dfa2)
 #        newaccepts = set()
-#        #print(newstates)
+#        newDFA = DFA(newstates, dfa1.alphabets, newinitial, newaccepts, newtransitions)
 #        for state in newstates:
 #            state1, state2 = state.split('_')
 #            #print(state1)
 #            #print(state2)
-#            if state1 in dfa1.accept_states and state2 not in dfa2.accept_states:
-#                newaccepts.add(state1+'_'+state2)
-#        return not len(newaccepts)
+#            if state1 in dfa1.accept_states and state2 in dfa2.accept_states:
+#                if state in newDFA.reachableStates():
+#                    newDFA.add_accept_state(state1+'_'+state2)
+#        return newDFA
+
+
+    def isSubset(self, other):
+        #self.Difference(other).printDFA()
+        return not len(self.Difference(other).accept_states)
+
+#    @classmethod
+#    def isSubset(cls,dfa1,dfa2):
+#        #self.Difference(other).printDFA()
+#        return not len(self.Difference(other).accept_states)
+
 
     def isDisjoint(self, other):
-        self.Intersection(other).printDFA()
+        #self.Intersection(other).printDFA()
         return not len(self.Intersection(other).accept_states)
 
 #    @classmethod
 #    def isDisjoint(cls,dfa1,dfa2):
-#        return not len(dfa1.Intersection(dfa2).accept_states)
+#        #self.Intersection(other).printDFA()
+#        return not len(self.Intersection(other).accept_states)
 
 
 
 
 
-##   A DFA that accept strings '*aa'
+#   A DFA that accept strings '*aa'
 dfa1 = DFA()
 dfa1.add_state('0')
 dfa1.add_state('1')
@@ -279,25 +282,25 @@ dfa1.add_transition('1', 'b', '0')
 dfa1.add_transition('2', 'a', '2')
 dfa1.add_transition('2', 'b', '0')
 
-dfa1.printDFA()
-
+#dfa1.printDFA()
+#
 #print(dfa1.isAccept('aa'))
-
-print(dfa1.isNull())
-
+#
+#print(dfa1.isNull())
+#
 #print(dfa1.isInfinite())
-
+#
 #print(dfa1.acceptStringLength())
-
+#
 #print(dfa1.maxstringlength())
-
+#
 #print(dfa1.minstringlength())
-
+#
 #dfa1.Complement().printDFA()
 
 
-""""
-#   A DFA that accept strings 'b*'
+
+#   A DFA that accepts strings that do not contain b
 dfa2 = DFA({'0', '1', '2'}               #states
             , {'a','b'}                  #alphabet
             , '0'                        #initial state
@@ -306,27 +309,27 @@ dfa2 = DFA({'0', '1', '2'}               #states
             , '1': {'a': '1', 'b': '2'}  #transitions
             , '2': {'a': '2', 'b': '2'}})#transitions
 
-dfa2.printDFA()
+#dfa2.printDFA()
+#
+#print(dfa2.isAccept('b'))
+#
+#print(dfa2.isNull())
+#
+#print(dfa2.isInfinite())
+#
+#print(dfa2.acceptStringLength())
+#
+#print(dfa2.maxstringlength())
+#
+#print(dfa2.minstringlength())
+#
+#dfa2.Complement().printDFA()
 
-print(dfa2.isAccept('b'))
-
-print(dfa2.isNull())
-
-print(dfa2.isInfinite())
-
-print(dfa2.acceptStringLength())
-
-print(dfa2.maxstringlength())
-
-print(dfa2.minstringlength())
-
-dfa2.Complement().printDFA()
-
-dfa1.Intersection(dfa2).printDFA()
-print(dfa1.Intersection(dfa2).isAccept('baa'))
+#dfa1.Intersection(dfa2).printDFA()
+#print(dfa1.Intersection(dfa2).isAccept('aaaaaaaa'))
 
 
-#   A DFA that accept strings 'bb*'
+#   A DFA that accepts strings that do not contain a
 dfa3 = DFA({'0', '1', '2'}          #states
             , {'a','b'}                  #alphabet
             , '0'                        #initial state
@@ -335,44 +338,44 @@ dfa3 = DFA({'0', '1', '2'}          #states
             , '1': {'a': '2', 'b': '1'}  #transitions
             , '2': {'a': '2', 'b': '2'}})#transitions
 
-dfa3.printDFA()
+#dfa3.printDFA()
 
 print(dfa3.isSubset(dfa2))
 print(dfa3.isDisjoint(dfa2))
-print(DFA.isSubset(dfa3, dfa2))
-dfa2.Intersection(dfa3).printDFA()
-DFA.Intersection(dfa2, dfa3).printDFA()
-dfa4 = DFA({'q0','q1','q2','q3'}       #states
-            ,{'a','b'}                 #alphabet
-            ,'q0'                      #initial state
-            ,{'q3'}                    #Accept state
-            ,{'q0':{'a':'q1','b':'q2'} #transitions
-            ,'q1':{'a':'q1','b':'q0'}  #transitions
-            ,'q2':{'a':'q3','b':'q0'}  #transitions
-            ,'q3':{'a':'q3','b':'q3'}})#transitions
-if dfa4.isAccept('b'):
-    print('Accepted')
-else: print('Rejected')
-if dfa4.isNull():
-    print('Null')
-else: print('Not Null')
-
-
-dfa5 = DFA({'q0','q1'},
-           {'a','b'},
-           'q0',
-           {'q1'},
-           {'q0':{'a':'q1','b':'q0'},
-           'q1':{'a':'q1','b':'q0'}})
-
-dfa6 = DFA({'p0','p1','p2'},
-           {'a','b'},
-           'p0',
-           {'p1'},
-           {'p0':{'a':'p2','b':'p1'},
-           'p1':{'a':'p1','b':'p1'},
-           'p2':{'a':'p2','b':'p2'}})
-print(1)
-usefulstate,newinitial,newtransitions=dfa5.NewDFA(dfa6)
-print(2)
-print(usefulstate,'\n\n',newinitial,'\n\n',newtransitions)"""
+#print(DFA.isSubset(dfa3, dfa2))
+#dfa2.Intersection(dfa3).printDFA()
+#DFA.Intersection(dfa2, dfa3).printDFA()
+#dfa4 = DFA({'q0','q1','q2','q3'}       #states
+#            ,{'a','b'}                 #alphabet
+#            ,'q0'                      #initial state
+#            ,{'q3'}                    #Accept state
+#            ,{'q0':{'a':'q1','b':'q2'} #transitions
+#            ,'q1':{'a':'q1','b':'q0'}  #transitions
+#            ,'q2':{'a':'q3','b':'q0'}  #transitions
+#            ,'q3':{'a':'q3','b':'q3'}})#transitions
+#if dfa4.isAccept('b'):
+#    print('Accepted')
+#else: print('Rejected')
+#if dfa4.isNull():
+#    print('Null')
+#else: print('Not Null')
+#
+#
+#dfa5 = DFA({'q0','q1'},
+#           {'a','b'},
+#           'q0',
+#           {'q1'},
+#           {'q0':{'a':'q1','b':'q0'},
+#           'q1':{'a':'q1','b':'q0'}})
+#
+#dfa6 = DFA({'p0','p1','p2'},
+#           {'a','b'},
+#           'p0',
+#           {'p1'},
+#           {'p0':{'a':'p2','b':'p1'},
+#           'p1':{'a':'p1','b':'p1'},
+#           'p2':{'a':'p2','b':'p2'}})
+#print(1)
+#usefulstate,newinitial,newtransitions=dfa5.NewDFA(dfa6)
+#print(2)
+#print(usefulstate,'\n\n',newinitial,'\n\n',newtransitions)
