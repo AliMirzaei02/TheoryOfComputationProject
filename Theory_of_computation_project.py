@@ -142,8 +142,8 @@ class DFA:
                 
         
     def Union(self,other):
-        newstates,newinitial,newtransitions=self.NewDFA(self,other)
-        newaccepts={}
+        newstates,newinitial,newtransitions=self.NewDFA(other)
+        newaccepts=set()
         for state1 in self.accept_states:
             for state2 in other.states:
                 newaccepts.add(state1+'_'+state2)
@@ -156,8 +156,8 @@ class DFA:
     
     @classmethod
     def Union(cls,dfa1,dfa2):
-        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa1,dfa2)
-        newaccepts={}
+        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa2)
+        newaccepts=set()
         for state1 in dfa1.accept_states:
             for state2 in dfa2.states:
                 newaccepts.add(state1+'_'+state2)
@@ -169,12 +169,32 @@ class DFA:
     
     
     def Difference(self,other):
-        pass
+        newstates,newinitial,newtransitions=self.NewDFA(other)
+        newaccepts=set()
+        for state1 in self.accept_states:
+            for state2 in other.states:
+                if state2 not in other.accept_states:
+                    newaccepts.add(state1+'_'+state2)
+        newDFA=DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
+        return newDFA
+    
+    
+    @classmethod
+    def Difference(cls,dfa1,dfa2):
+        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa2)
+        newaccepts=set()
+        for state1 in dfa1.accept_states:
+            for state2 in dfa2.states:
+                if state2 not in dfa2.accept_states:
+                    newaccepts.add(state1+'_'+state2)
+        newDFA=DFA(newstates,dfa1.alphabets,newinitial,newaccepts,newtransitions)
+        return newDFA
+    
         
-    def Intersection(self,new_dfa):
-        newstates,newinitial,newtransitions=self.NewDFA(self,other)
+    def Intersection(self,other):
+        newstates,newinitial,newtransitions=self.NewDFA(other)
         #def __init__(self, states=set(), alphabets=set(), initial_state=str(), accept_states=set(), transitions=dict()):
-        newaccepts={}
+        newaccepts=set()
         for state1 in self.states:
             if state1 not in self.accept_states: continue
             for state2 in other.states:
@@ -185,8 +205,8 @@ class DFA:
     
     @classmethod
     def Intersection(cls,dfa1,dfa2):
-        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa1,dfa2)
-        newaccepts={}
+        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa2)
+        newaccepts=set()
         for state1 in dfa1.states:
             if state1 not in dfa1.accept_states:continue
             for state2 in dfa2.states:
