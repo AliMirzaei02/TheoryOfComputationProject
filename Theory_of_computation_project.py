@@ -214,64 +214,80 @@ class DFA:
                     newaccepts.add(state1+'_'+state2)
         newDFA = DFA(newstates,dfa1.alphabets,newinitial,newaccepts,newtransitions)
         return newDFA
-        
-        
-        
-    def isSubset(self, new_dfa):
-        intersect = self.Intersection(new_dfa)
-        selfgraph = self.toGraph()
-        new_Graph = intersect.toGraph()
-        if nx.is_isomorphic(selfgraph, new_Graph): return True
-        else: return False
+    
+    def isSubset(self, other):
+        newstates, newinitial, newtransitions = self.NewDFA(other)
+        newaccepts = set()
+        #print(newstates)
+        for state in newstates:
+            state1, state2 = state.split('_')
+            #print(state1)
+            #print(state2)
+            if state1 in self.accept_states and state2 not in other.accept_states:
+                newaccepts.add(state1+'_'+state2)
+        return not len(newaccepts)
+
+    @classmethod
+    def isSubset(cls,dfa1,dfa2):
+        newstates, newinitial, newtransitions = dfa1.NewDFA(dfa2)
+        newaccepts = set()
+        #print(newstates)
+        for state in newstates:
+            state1, state2 = state.split('_')
+            #print(state1)
+            #print(state2)
+            if state1 in dfa1.accept_states and state2 not in dfa2.accept_states:
+                newaccepts.add(state1+'_'+state2)
+        return not len(newaccepts)
 
 
 
 
 
-#   A DFA that accept strings '*aa'
-dfa1 = DFA()
-dfa1.add_state('0')
-dfa1.add_state('1')
-dfa1.add_state('2')
-dfa1.add_alphabet('a')
-dfa1.add_alphabet('b')
-dfa1.add_initial_state('0')
-dfa1.add_accept_state('2')
-dfa1.add_transition('0', 'a', '1')
-dfa1.add_transition('0', 'b', '0')
-dfa1.add_transition('1', 'a', '2')
-dfa1.add_transition('1', 'b', '0')
-dfa1.add_transition('2', 'a', '2')
-dfa1.add_transition('2', 'b', '0')
-
-dfa1.printDFA()
-
-print(dfa1.isAccept('aa'))
-
-print(dfa1.isNull())
-
-print(dfa1.isInfinite())
-
-print(dfa1.acceptStringLength())
-
-print(dfa1.maxstringlength())
-
-print(dfa1.minstringlength())
-
-dfa1.Complement().printDFA()
+##   A DFA that accept strings '*aa'
+#dfa1 = DFA()
+#dfa1.add_state('0')
+#dfa1.add_state('1')
+#dfa1.add_state('2')
+#dfa1.add_alphabet('a')
+#dfa1.add_alphabet('b')
+#dfa1.add_initial_state('0')
+#dfa1.add_accept_state('2')
+#dfa1.add_transition('0', 'a', '1')
+#dfa1.add_transition('0', 'b', '0')
+#dfa1.add_transition('1', 'a', '2')
+#dfa1.add_transition('1', 'b', '0')
+#dfa1.add_transition('2', 'a', '2')
+#dfa1.add_transition('2', 'b', '0')
+#
+#dfa1.printDFA()
+#
+#print(dfa1.isAccept('aa'))
+#
+#print(dfa1.isNull())
+#
+#print(dfa1.isInfinite())
+#
+#print(dfa1.acceptStringLength())
+#
+#print(dfa1.maxstringlength())
+#
+#print(dfa1.minstringlength())
+#
+#dfa1.Complement().printDFA()
 
 
 
 #   A DFA that accept strings 'b*'
-#dfa2 = DFA({'0', '1', '2'}               #states
-#            , {'a','b'}                  #alphabet
-#            , '0'                        #initial state
-#            , {'1'}                      #accept_states
-#            ,{'0': {'a': '2', 'b': '1'}  #transitions
-#            , '1': {'a': '1', 'b': '1'}  #transitions
-#            , '2': {'a': '2', 'b': '2'}})#transitions
+dfa2 = DFA({'0', '1', '2'}               #states
+            , {'a','b'}                  #alphabet
+            , '0'                        #initial state
+            , {'1'}                      #accept_states
+            ,{'0': {'a': '2', 'b': '1'}  #transitions
+            , '1': {'a': '1', 'b': '1'}  #transitions
+            , '2': {'a': '2', 'b': '2'}})#transitions
 
-#dfa2.printDFA()
+dfa2.printDFA()
 
 #print(dfa2.isAccept('b'))
 
@@ -292,49 +308,52 @@ dfa1.Complement().printDFA()
 
 
 #   A DFA that accept strings 'bb*'
-#dfa3 = DFA({'0', '1', '2', '3'}          #states
-#            , {'a','b'}                  #alphabet
-#            , '0'                        #initial state
-#            , {'1'}                      #accept_states
-#            ,{'0': {'a': '3', 'b': '1'}  #transitions
-#            , '1': {'a': '3', 'b': '2'}  #transitions
-#            , '2': {'a': '2', 'b': '2'}  #transitions
-#            , '3': {'a': '3', 'b': '3'}})#transitions
+dfa3 = DFA({'0', '1', '2', '3'}          #states
+            , {'a','b'}                  #alphabet
+            , '0'                        #initial state
+            , {'1'}                      #accept_states
+            ,{'0': {'a': '3', 'b': '1'}  #transitions
+            , '1': {'a': '3', 'b': '2'}  #transitions
+            , '2': {'a': '2', 'b': '2'}  #transitions
+            , '3': {'a': '3', 'b': '3'}})#transitions
 
-#print(dfa3.isSubset(dfa2))'''
+dfa3.printDFA()
 
-
-dfa4 = DFA({'q0','q1','q2','q3'}       #states
-            ,{'a','b'}                 #alphabet
-            ,'q0'                      #initial state
-            ,{'q3'}                    #Accept state
-            ,{'q0':{'a':'q1','b':'q2'} #transitions
-            ,'q1':{'a':'q1','b':'q0'}  #transitions
-            ,'q2':{'a':'q3','b':'q0'}  #transitions
-            ,'q3':{'a':'q3','b':'q3'}})#transitions
-if dfa4.isAccept('b'):
-    print('Accepted')
-else: print('Rejected')
-if dfa4.isNull():
-    print('Null')
-else: print('Not Null')
-
-
-dfa5 = DFA({'q0','q1'},
-           {'a','b'},
-           'q0',
-           {'q1'},
-           {'q0':{'a':'q1','b':'q0'},
-           'q1':{'a':'q1','b':'q0'}})
-
-dfa6 = DFA({'p0','p1','p2'},
-           {'a','b'},
-           'p0',
-           {'p1'},
-           {'p0':{'a':'p2','b':'p1'},
-           'p1':{'a':'p1','b':'p1'},
-           'p2':{'a':'p2','b':'p2'}})
-print(1)
-usefulstate,newinitial,newtransitions=dfa5.NewDFA(dfa6)
-print(2)
-print(usefulstate,'\n\n',newinitial,'\n\n',newtransitions)
+print(dfa3.isSubset(dfa2))
+#print(DFA.isSubset(dfa3, dfa2))
+#dfa2.Intersection(dfa3).printDFA()
+#DFA.Intersection(dfa2, dfa3).printDFA()
+#dfa4 = DFA({'q0','q1','q2','q3'}       #states
+#            ,{'a','b'}                 #alphabet
+#            ,'q0'                      #initial state
+#            ,{'q3'}                    #Accept state
+#            ,{'q0':{'a':'q1','b':'q2'} #transitions
+#            ,'q1':{'a':'q1','b':'q0'}  #transitions
+#            ,'q2':{'a':'q3','b':'q0'}  #transitions
+#            ,'q3':{'a':'q3','b':'q3'}})#transitions
+#if dfa4.isAccept('b'):
+#    print('Accepted')
+#else: print('Rejected')
+#if dfa4.isNull():
+#    print('Null')
+#else: print('Not Null')
+#
+#
+#dfa5 = DFA({'q0','q1'},
+#           {'a','b'},
+#           'q0',
+#           {'q1'},
+#           {'q0':{'a':'q1','b':'q0'},
+#           'q1':{'a':'q1','b':'q0'}})
+#
+#dfa6 = DFA({'p0','p1','p2'},
+#           {'a','b'},
+#           'p0',
+#           {'p1'},
+#           {'p0':{'a':'p2','b':'p1'},
+#           'p1':{'a':'p1','b':'p1'},
+#           'p2':{'a':'p2','b':'p2'}})
+#print(1)
+#usefulstate,newinitial,newtransitions=dfa5.NewDFA(dfa6)
+#print(2)
+#print(usefulstate,'\n\n',newinitial,'\n\n',newtransitions)
