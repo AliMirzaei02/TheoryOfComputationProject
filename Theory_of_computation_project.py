@@ -304,42 +304,37 @@ dfa1.Complement().printDFA()
 #print(dfa3.isSubset(dfa2))'''
 
 
-dfa=DFA({'q0','q1','q2','q3'}#states
-            ,{'a','b'}#alphabet
-            ,'q0'#initial state
-            ,{'q3'}#Accept state
-            ,{'q0':{'a':'q1','b':'q2'}#transitions
-            ,'q1':{'a':'q1','b':'q0'}#transitions
-            ,'q2':{'a':'q3','b':'q0'}#transitions
-            ,'q3':{'a':'q3','b':'q3'}}#transitions
-            )
-if dfa.isAccept('b'):
+dfa4 = DFA({'q0','q1','q2','q3'}       #states
+            ,{'a','b'}                 #alphabet
+            ,'q0'                      #initial state
+            ,{'q3'}                    #Accept state
+            ,{'q0':{'a':'q1','b':'q2'} #transitions
+            ,'q1':{'a':'q1','b':'q0'}  #transitions
+            ,'q2':{'a':'q3','b':'q0'}  #transitions
+            ,'q3':{'a':'q3','b':'q3'}})#transitions
+if dfa4.isAccept('b'):
     print('Accepted')
 else: print('Rejected')
-if dfa.isNull():
+if dfa4.isNull():
     print('Null')
 else: print('Not Null')
 
 
-dfa1=DFA({'q0','q1'},
-             {'a','b'},
-             'q0',
-             {'q1'},
-             {'q0':{'a':'q1','b':'q0'},
-              'q1':{'a':'q1','b':'q0'}},
-             
-             )
+dfa5 = DFA({'q0','q1'},
+           {'a','b'},
+           'q0',
+           {'q1'},
+           {'q0':{'a':'q1','b':'q0'},
+           'q1':{'a':'q1','b':'q0'}})
 
-dfa2=DFA({'p0','p1','p2'},
-             {'a','b'},
-             'p0',
-             {'p1'},
-             {'p0':{'a':'p2','b':'p1'},
-              'p1':{'a':'p1','b':'p1'},
-              'p2':{'a':'p2','b':'p2'}},
-             
-             )
+dfa6 = DFA({'p0','p1','p2'},
+           {'a','b'},
+           'p0',
+           {'p1'},
+           {'p0':{'a':'p2','b':'p1'},
+           'p1':{'a':'p1','b':'p1'},
+           'p2':{'a':'p2','b':'p2'}})
 print(1)
-usefulstate,newinitial,newtransitions=dfa1.NewDFA(dfa1,dfa2)
+usefulstate,newinitial,newtransitions=dfa5.NewDFA(dfa6)
 print(2)
-print(usefulstate,'\n',newinitial,'\n',newtransitions)
+print(usefulstate,'\n\n',newinitial,'\n\n',newtransitions)
