@@ -121,17 +121,17 @@ class DFA:
         newDFA = DFA(self.states, self.alphabets, self.initial_state, NewAccept, self.transitions)
         return newDFA
         
-    def NewDFA(self,dfa1,dfa2):
+    def NewDFA(self,dfa2):
             seen=[]
-            if dfa1.alphabets != dfa2.alphabets: raise Exception('input symbols do not match!')
-            newinitial=dfa1.initial_state+'_'+dfa2.initial_state
+            if self.alphabets != dfa2.alphabets: raise Exception('input symbols do not match!')
+            newinitial=self.initial_state+'_'+dfa2.initial_state
             usefulstates={newinitial}
             visited=[newinitial]
             newtransitions={}
             while len(visited)>0:
                 state=visited.pop(0)
-                for symbol in dfa1.alphabets:
-                    nextdfastate=dfa1.transitions[state.split('_')[0]][symbol]+'_'+dfa2.transitions[state.split('_')[1]][symbol]
+                for symbol in self.alphabets:
+                    nextdfastate=self.transitions[state.split('_')[0]][symbol]+'_'+dfa2.transitions[state.split('_')[1]][symbol]
                     newtransitions[state]=newtransitions.get(state,{})
                     newtransitions[state][symbol]=nextdfastate
                     if nextdfastate not in seen:
@@ -142,8 +142,31 @@ class DFA:
                 
         
     def Union(self,other):
-        pass
-        
+        newstates,newinitial,newtransitions=self.NewDFA(self,other)
+        #def __init__(self, states=set(), alphabets=set(), initial_state=str(), accept_states=set(), transitions=dict()):
+        newaccepts={}
+        for state1 in self.states:
+            if state1 not in self.accept_states: continue
+            for state2 in other.states:
+                if state2 in other.accept_states:
+                    newaccepts.add(state1+'_'+state2)
+        newDFA=DFA(newstates,self.alphabets,newinitial,newaccepts,newtransitions)
+        return newDFA
+                
+    
+    @classmethod
+    def Union(cls,dfa1,dfa2):
+        newstates,newinitial,newtransitions=dfa1.NewDFA(dfa1,dfa2)
+        newaccepts={}
+        for state1 in dfa1.states:
+            if state1 not in dfa1.accept_states:continue
+            for state2 in dfa2.states:
+                if state2 in dfa2.accept_states:
+                    newaccepts.add(state1+'_'+state2)
+        newDFA = DFA(newstates,dfa1.alphabets,newinitial,newaccepts,newtransitions)
+        return newDFA
+    
+    
     def Difference(self,other):
         pass
         
@@ -240,11 +263,12 @@ dfa1.Complement().printDFA()
 dfa=DFA({'q0','q1','q2','q3'}#states
             ,{'a','b'}#alphabet
             ,'q0'#initial state
+            ,{'q3'}#Accept state
             ,{'q0':{'a':'q1','b':'q2'}#transitions
             ,'q1':{'a':'q1','b':'q0'}#transitions
             ,'q2':{'a':'q3','b':'q0'}#transitions
             ,'q3':{'a':'q3','b':'q3'}}#transitions
-            ,{'q3'})#Accept state
+            )
 if dfa.isAccept('b'):
     print('Accepted')
 else: print('Rejected')
@@ -256,18 +280,20 @@ else: print('Not Null')
 dfa1=DFA({'q0','q1'},
              {'a','b'},
              'q0',
+             {'q1'},
              {'q0':{'a':'q1','b':'q0'},
               'q1':{'a':'q1','b':'q0'}},
-             {'q1'}
+             
              )
 
 dfa2=DFA({'p0','p1','p2'},
              {'a','b'},
              'p0',
+             {'p1'},
              {'p0':{'a':'p2','b':'p1'},
               'p1':{'a':'p1','b':'p1'},
               'p2':{'a':'p2','b':'p2'}},
-             {'p1'}
+             
              )
 print(1)
 usefulstate,newinitial,newtransitions=dfa1.NewDFA(dfa1,dfa2)
