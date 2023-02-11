@@ -355,6 +355,10 @@ class DFA:
         newDFA=DFA(newstates,self.alphabets,newinitial,newaccept,newtransition)                     
         return     newDFA
 
+
+
+
+
 class NFA:
     def __init__(self, states=set(), alphabets=set(), initial_state=str(), accept_states=set(), transitions=dict()):
         self.states = states
@@ -418,6 +422,7 @@ class NFA:
                 else:
                     if "ϕ" not in dfa.states:
                         dfa.states.add("ϕ")
+
 
 
 
