@@ -528,3 +528,6 @@ print("DFA1 isSubset of DFA5? ", dfa1.isSubset(dfa5))
 print()
 
 print("DFA3 and DFA2 are isSubset? ", DFA.isDisjoint(dfa3, dfa2))
+
+dfa2=dfa2.minimize()
+dfa2.printDFA()
