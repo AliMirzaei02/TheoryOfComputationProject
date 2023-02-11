@@ -400,9 +400,10 @@ class NFA:
         lambda_closure = dict()
         for single_state in self.states:
             lambda_closure[single_state] = self.getLambdaClosure(single_state)
-        dfa_deque = deque(lambda_closure[self.initial_state])
-
         dfa.add_initial_state(self.getNewState(lambda_closure[self.initial_state]))
+        if self.isAcceptState(lambda_closure[self.initial_state]):
+            dfa.add_accept_state(self.getNewState(lambda_closure[self.initial_state]))
+        dfa_deque = deque(lambda_closure[self.initial_state])
 
         while dfa_deque:
             cur_state = dfa_deque.popleft()
@@ -416,12 +417,16 @@ class NFA:
                         to_state.update(set(lambda_closure[self.states[state]]))
                     if to_state not in dfa.states:
                         dfa_deque.append(to_state)
-                        dfa.states.add(self.getNewState(to_state))
+                        dfa.add_state(self.getNewState(to_state))
                         if self.isAcceptState(to_state):
-                            dfa.accept_states.add(self.getNewState(to_state))
+                            dfa.add_accept_state(self.getNewState(to_state))
+                    dfa.add_transition(self.getNewState(cur_state), alpha, self.getNewState(to_state))
                 else:
                     if "ϕ" not in dfa.states:
-                        dfa.states.add("ϕ")
+                        dfa.add_state("ϕ")
+                        for alpha in self.alphabets:
+                            dfa.add_transition("ϕ", alpha, "ϕ")
+                    dfa.add_transition(self.getNewState(cur_state), alpha, self.getNewState(to_state))
 
 
 
