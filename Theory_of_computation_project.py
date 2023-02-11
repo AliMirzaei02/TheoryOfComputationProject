@@ -271,6 +271,19 @@ class DFA:
 
 
 
+
+class NFA:
+    def __init__(self, states=set(), alphabets=set(), initial_state=str(), accept_states=set(), transitions=dict()):
+        self.states = states
+        self.alphabets = alphabets.add("l")
+        self.initial_state = initial_state
+        self.accept_states = accept_states
+        self.transitions = transitions
+    
+    
+
+
+
 ####################################################
 ###                 DFA Objects                  ###
 ##                                                ##
