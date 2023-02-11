@@ -269,6 +269,91 @@ class DFA:
         return not len(DFA.Intersection(dfa1, dfa2).accept_states)
 
 
+    def deltastar(self,state,string2check):
+        for symbol in string2check:
+            state= self.transitions[state][symbol]
+        return state
+
+    def minimize(self):
+        flag=False
+        DFAacceptstates=list(self.accept_states)
+        DFAnonacceptstates=list(self.states - self.accept_states)
+        nthEquivalence=[[DFAnonacceptstates,DFAacceptstates]]
+        n=0
+        eq=False
+        while True:
+            eqclass=[]
+            l=[]
+            for i in nthEquivalence[n]:
+                l.append(i[0])
+            eqclass.append([l])    
+            for i in range(len(nthEquivalence[n])):
+                for state in nthEquivalence[n][i][1:] :
+                    eq=True
+                    for sym in self.alphabets:
+                        stateofeqclass=self.deltastar(eqclass[i],sym)
+                        stateofstate=self.deltastar(state,sym)
+                        for lists in nthEquivalence[n]:
+                            if stateofeqclass in lists:
+                                if stateofstate in lists:
+                                    eq=True
+                                else:
+                                    eq=False
+                                    break
+                        if not eq:
+                            if len(nthEquivalence)==n+1: 
+                                nthEquivalence.append([[x for x in eqclass[i]],[state]])
+                                break
+                            flag1=bool
+                            for checkstate in nthEquivalence[n+1]:
+                                for symbol in self.alphabets:
+                                    stateofstate=self.deltastar(state,symbol)
+                                    stateofcheckstate=self.deltastar(checkstate[0],symbol)
+                                    for checklists in nthEquivalence[n]:
+                                        if stateofstate in checklists:
+                                            if stateofcheckstate in checklists:
+                                                flag1=True
+                                            else:
+                                                flag1=False
+                                                break
+                                    if not flag1:break    
+                                if flag1: 
+                                    checkstate.append(state)
+                                    break
+                            else: nthEquivalence[n+1].append(state)
+                    if eq:
+                        if len(nthEquivalence)==n+1: 
+                            nthEquivalence.append([[x for x in eqclass[i]]])
+                        for nextlists in nthEquivalence[n+1]:
+                            if eqclass[i] in nextlists:nextlists.append(state)
+                                                 
+            if nthEquivalence[n] == nthEquivalence[n+1]:break
+            n+=1  
+        newstates=nthEquivalence[n]
+        neweq=[]
+        for lists in newstates:
+            neweq.append(lists[0])
+        for states in newstates:
+            if self.initial_state in states:newinitial= states
+        newaccept=[]
+        for accept in self.accept_states:
+            for states in newstates:
+                if accept in states: newaccept.append(states)
+        newtransition={}
+        for state in neweq:
+            for sym in self.alphabets:
+                goesto=self.deltastar(state,sym)
+                for lists in newstates:
+                    if state in lists:
+                        for lists2 in newstates:
+                            if goesto in lists2:
+                                newtransition['_'.join(lists)]=newtransition.get('_'.join(lists),{})
+                                newtransition['_'.join(lists)][sym]='_'.join(lists2)
+        newstates=['_'.join(x) for x in newstates]
+        newaccept=['_'.join(x) for x in newaccept]
+        newinitial='_'.join(newinitial)
+        newDFA=DFA(newstates,self.alphabets,newinitial,newaccept,newtransition)                     
+        return     newDFA
 
 class NFA:
     def __init__(self, states=set(), alphabets=set(), initial_state=str(), accept_states=set(), transitions=dict()):
